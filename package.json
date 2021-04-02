@@ -11,9 +11,7 @@
         "url": "https://github.com/josepedrodias/f1gis"
     },
     "scripts": {
-        "run": "npx https-localhost",
-        "generate": "node --experimental-modules generate.mjs",
-        "test": "tap"
+        "serve": "npx https-localhost"
     },
     "engines": {
         "node": ">=14"
