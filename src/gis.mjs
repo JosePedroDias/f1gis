@@ -1,7 +1,6 @@
 const π = Math.PI;
 const π2 = 2 * Math.PI;
 const TILE_DIM = 256;
-const RAD2DEG = 180 / π;
 const DEG2RAD = π / 180;
 
 function seq(n) {

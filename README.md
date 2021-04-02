@@ -10,13 +10,13 @@ This project showcases the adoption of the [open race track format](https://gith
 ## Plan
 
 - [x] basic GIS poly drawing
-- [ ] support main geojson types
-  - [ ] 
+- [ ] support relevant geojson types
+  - [x] LineString
 - [ ] support RT extensions
   - [ ] width
   - [ ] alignment-from-track
   - [ ] model and model-batch
-- [ ] render cars at scale and properly rotated
+- [x] render cars at scale and properly rotated
 - [ ] keyboard movement
 - [ ] car movement
 - [ ] implement checkpoints to validate lap number and clock lap time
