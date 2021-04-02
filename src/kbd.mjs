@@ -13,9 +13,14 @@ export function updateKeys() {
 
 export function subscribeKeys() {
     function onKey(ev) {
-        ev.preventDefault();
-        ev.stopPropagation();
         const key = ev.key;
+        const special = (key === 'Meta' || key === 'Alt' || key === 'Control');
+
+        if (!special) {
+            ev.preventDefault();
+            ev.stopPropagation();
+        }
+
         const isDown = ev.type === 'keydown';
         const keysJust = isDown ? keysJustDown : keysJustUp;
         keysDown[key] = isDown;

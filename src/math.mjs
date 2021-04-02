@@ -4,6 +4,9 @@ const cos = Math.cos;
 const π = Math.PI;
 const π2 = 2 * π;
 
+export const DEG2RAD = π / 180;
+export const RAD2DEG = 180 / π;
+
 export function limits(arr) {
     let m = Number.MAX_VALUE;
     let M = -Number.MAX_VALUE;
@@ -148,9 +151,8 @@ export function parametric(points, angle, dist, closed) {
         let a2 = Math.atan2(d[1], d[0]);
 
         let a = averageAngles([a1, a2]);
-        console.log(i, a1, a2, a);
-
         const p = movePolar(curr, a + angle, dist);
+
         points2.push(p);
         ++i;
     }
