@@ -1,7 +1,7 @@
-import { loadSprites, drawPolygon, drawCircle, drawSprite, runGameLoop } from './canvas.mjs';
+import { loadSprites, drawPolygon, drawCircle, drawRect, drawText, drawPixel, drawSprite, runGameLoop } from './canvas.mjs';
 import { subscribeKeys, keysDown, keysJustDown } from './kbd.mjs';
 import { projectFactory } from './gis.mjs';
-import { limits2 } from './math.mjs';
+import { limits2, parametric } from './math.mjs';
 
 async function run() {
     //const res = await fetch('./assets/maps/portimao.geojson');
@@ -12,11 +12,12 @@ async function run() {
 
     const scroll = [230, 100];
     const ZOOM = 16;
-    const FONT_SIZE = 16;
+    const FONT_SIZE = 12;
     const ctx = document.querySelector('canvas').getContext('2d');
     ctx.font = `${FONT_SIZE}px sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+    ctx.fillStyle = '#330';
 
     const pr = projectFactory(ZOOM);
 
@@ -24,7 +25,8 @@ async function run() {
     data.features.forEach((feature, i) => {
         const geo = feature.geometry;
         const props = feature.properties;
-        console.log(geo, props);
+        const kind = props['rt:kind'];
+        console.log(props);
 
         if (props.stroke) {
             ctx.strokeStyle = props.stroke;
@@ -40,7 +42,28 @@ async function run() {
             }
 
             const coords3 = coords2.map(([x, y]) => [x - ox, y - oy]);
-            drawPolygon(ctx, coords3);
+
+            if (['track', 'pit'].includes(kind)) {
+                const width = parseFloat(props["rt:width"]);
+                if (isNaN(width)) { throw new Error(`${kind} missing property rt:width!`) }
+                const w = width * ZOOM * 0.015;
+                const closed = false;
+                const coords3r = parametric(coords3, Math.PI / 2, w, closed);
+                const coords3l = parametric(coords3, -Math.PI / 2, w, closed);
+                drawPolygon(ctx, coords3r);
+                drawPolygon(ctx, coords3l);
+
+                const coords3__ = parametric(coords3, -Math.PI / 2, w * 6, closed);
+                ctx.strokeStyle = '#033';
+                for (const [i, p] of Object.entries(coords3)) {
+                    //drawPixel(ctx, p);
+
+                    drawCircle(ctx, p, 2);
+                    drawText(ctx, coords3__[i], `${i}`);
+                }
+            } else {
+                drawPolygon(ctx, coords3);
+            }
         }
     });
 

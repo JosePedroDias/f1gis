@@ -44,6 +44,27 @@ export function drawPolygon(ctx, poly, { fill, close } = {}) {
     ctx[fill ? 'fill' : 'stroke']();
 }
 
+export function drawText(ctx, [x, y], text) {
+    ctx.fillText(text, x, y);
+}
+
+export function drawRect(ctx, [x1, y1], [x2, y2], { fill, clear } = {}) {
+    const w = x2 - x1 || 1;
+    const h = y2 - y1 || 1;
+    ctx[fill ? 'fillRect' : clear ? 'clearRect' : 'strokeRect'](x1, y1, w, h);
+}
+
+export function drawLine(ctx, [x1, y1], [x2, y2]) {
+    ctx.beginPath();
+    ctx.moveTo([x1, y1]);
+    ctx.lineTo([x2, y2]);
+    ctx.stroke();
+}
+
+export function drawPixel(ctx, p) {
+    drawRect(ctx, p, p, { fill: true });
+}
+
 export function drawCircle(ctx, [cx, cy], r, { fill } = {}) {
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, π2);

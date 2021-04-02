@@ -13,7 +13,7 @@ This project showcases the adoption of the [open race track format](https://gith
 - [ ] support relevant geojson types
   - [x] LineString
 - [ ] support RT extensions
-  - [ ] width
+  - [x] width
   - [ ] alignment-from-track
   - [ ] model and model-batch
 - [x] render cars at scale and properly rotated
