@@ -119,6 +119,16 @@ export function average(arr) {
     return arr.reduce((prev, curr) => prev + curr, 0) / arr.length;
 }
 
+export function averageAngles(arr) {
+    let v = [0, 0];
+
+    for (const a of arr) {
+        v = addV(v, movePolar([0, 0], a, 1));
+    }
+
+    return Math.atan2(v[1], v[0]);
+}
+
 export function parametric(points, angle, dist, closed) {
     const l = points.length;
     const points2 = [];
@@ -137,8 +147,8 @@ export function parametric(points, angle, dist, closed) {
         d = subV(next, curr);
         let a2 = Math.atan2(d[1], d[0]);
 
-        let a = average([a1, a2]);
-        //console.log(i, a1, a2, a);
+        let a = averageAngles([a1, a2]);
+        console.log(i, a1, a2, a);
 
         const p = movePolar(curr, a + angle, dist);
         points2.push(p);

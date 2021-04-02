@@ -12,7 +12,7 @@ async function run() {
 
     const scroll = [230, 100];
     const ZOOM = 16;
-    const FONT_SIZE = 12;
+    const FONT_SIZE = 10;
     const ctx = document.querySelector('canvas').getContext('2d');
     ctx.font = `${FONT_SIZE}px sans-serif`;
     ctx.textAlign = 'center';
@@ -53,12 +53,15 @@ async function run() {
                 drawPolygon(ctx, coords3r);
                 drawPolygon(ctx, coords3l);
 
-                const coords3__ = parametric(coords3, -Math.PI / 2, w * 6, closed);
+                const w_ = w * 4;
+                const coords3_ = parametric(coords3, Math.PI / 2, w_, closed);
+                const coords3__ = parametric(coords3, -Math.PI / 2, w_, closed);
                 ctx.strokeStyle = '#033';
                 for (const [i, p] of Object.entries(coords3)) {
                     //drawPixel(ctx, p);
 
                     drawCircle(ctx, p, 2);
+                    drawText(ctx, coords3_[i], `${i}`);
                     drawText(ctx, coords3__[i], `${i}`);
                 }
             } else {
