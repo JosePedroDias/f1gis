@@ -1,0 +1,20 @@
+html,
+body {
+  border: 0;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+body {
+  background-color: #fff;
+}
+
+canvas {
+  position: fixed;
+  width: 800px;
+  height: 800px;
+  left: 50%;
+  top: 50%;
+  margin-left: -400px;
+  margin-top: -400px;
+}
