@@ -61,12 +61,10 @@ function project(loc, zoom) {
     return project3(project2(project1(loc)), zoom);
 };
 
-export function projectFactory(origin, zoom) {
-    const [ox, oy] = project(origin, zoom);
+export function projectFactory(zoom) {
     return function pr(xyPair) {
         const [x, y] = project(xyPair, zoom);
-        //return [x, y];
-        return [x - ox, oy - y];
+        return [x, - y];
     }
 }
 
