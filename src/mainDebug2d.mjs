@@ -7,7 +7,7 @@ import { toPolar } from './math.mjs';
 import { drawArrow } from './canvas.mjs';
 
 async function run() {
-    const WINDOW_SIZE = 1200;
+    const WINDOW_SIZE = 1400;
     const ZOOM = 17;
     const FONT_SIZE = 10;
 

@@ -30,6 +30,6 @@ This project showcases the adoption of the [open race track format](https://gith
 
 ## Sample content
 
-- [debug 2D map](https://josepedrodias.github.io/f1gis/)
-- [sample 2D](https://josepedrodias.github.io/f1gis/2D.html)
-- [sample 3D](https://josepedrodias.github.io/f1gis/3D.html)
+- [debug 2D map](https://josepedrodias.github.io/f1gis/) - renders features already supported by the parser, with auxiliary info to help debug any issues
+- [sample 2D](https://josepedrodias.github.io/f1gis/2D.html) - WIP - will allow driving top-down with stupid simple car and camera
+- [sample 3D](https://josepedrodias.github.io/f1gis/3D.html) - SUPER WIP - will render 3D mesh of map based on parsed data
