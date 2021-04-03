@@ -1,15 +1,17 @@
 # F1 GIS
 
-A sample JS game to exercise the idea of mashing GIS maps as a base for a top-down racing game.
+This project showcases an implementation of the [open race track format](https://github.com/JosePedroDias/open-race-track-format) for designing race tracks.
 
-This is pretty much work in progress to validate the ideas and assert playability.
+With this I intend to:
+- exercise the creation of tracks and come up with tutorial content;
+- validate the how well this format captures relevant track data;
+- how easy it is to use the parsed data and generate 2D/3D content from it suitable for game usage.
 
-This project showcases the adoption of the [open race track format](https://github.com/JosePedroDias/open-race-track-format) for designing race tracks.
-
+Will also try to create a simple Javascript racing game using the parsed track information, although that is not the main goal of this repo.
 
 ## Plan
 
-- [ ] rt.geojson parsing
+- [ ] `rt.geojson` parsing completeness
   - [ ] 2D
     - [x] track and pit
     - [ ] checkpoints
@@ -24,11 +26,15 @@ This project showcases the adoption of the [open race track format](https://gith
     - [ ] cross-sections + track decorations
 
 - sample apps
-  - [x] debug drawing in canvas
+  - [x] debug drawing in canvas (WIP)
   - [ ] 2D example
   - [ ] 3D example
 
-## Sample content
+## Bugs
+
+- wrong orientation at track start/end
+
+## Samples:
 
 - [debug 2D map](https://josepedrodias.github.io/f1gis/debug2d.html) - renders features already supported by the parser, with auxiliary info to help debug any issues
 - [sample 2D](https://josepedrodias.github.io/f1gis/sample2d.html) - WIP - will allow driving top-down with stupid simple car and camera
