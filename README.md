@@ -9,15 +9,28 @@ This project showcases the adoption of the [open race track format](https://gith
 
 ## Plan
 
-- [x] basic GIS poly drawing
-- [ ] support relevant geojson types
-  - [x] LineString
-- [ ] support RT extensions
-  - [x] width
-  - [ ] alignment-from-track
-  - [ ] model and model-batch
-- [x] render cars at scale and properly rotated
-- [ ] keyboard movement
-- [ ] car movement
-- [ ] implement checkpoints to validate lap number and clock lap time
-- [ ] camera with zoom and rotation?
+- [ ] rt.geojson parsing
+  - [ ] 2D
+    - [x] track and pit
+    - [ ] checkpoints
+    - [ ] starting-grid and pit-stop
+    - [ ] alignment-from-track
+    - [ ] model and model-batch
+    - [ ] track decorations
+    - [ ] terrain-material
+    - [ ] buildings
+  - [ ] 3D
+    - [ ] same support as 2D
+    - [ ] cross-sections + track decorations
+
+- sample apps
+  - [x] debug drawing in canvas
+  - [ ] 2D example
+  - [ ] 3D example
+
+## Sample content
+
+- [debug 2D map](https://josepedrodias.github.io/f1gis/)
+- [sample 2D](https://josepedrodias.github.io/f1gis/2D.html)
+- [sample 3D](https://josepedrodias.github.io/f1gis/3D.html)
+- 
