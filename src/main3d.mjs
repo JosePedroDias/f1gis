@@ -1,7 +1,58 @@
 import * as THREE from '../external/three.mjs';
 import { OrbitControls } from '../external/OrbitControls.mjs';
 
-// https://threejs.org/docs/
+// https://threejs.org/docs
+// TODO https://threejs.org/docs/index.html#api/en/lights/shadows/DirectionalLightShadow
+// TODO https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry.html
+// https://threejs.org/examples/#webgl_buffergeometry_indexed
+// https://threejs.org/examples/#webgl_buffergeometry
+// TODO https://threejs.org/examples/#physics_ammo_rope
+
+function generateGeometry() {
+    const geometry = new THREE.BufferGeometry();
+
+    const indices = [];
+    const vertices = [];
+    const normals = [];
+
+    const size = 2;
+    const segments = 3;
+
+    const halfSize = size / 2;
+    const segmentSize = size / segments;
+
+    // generate vertices, normals and color data for a simple grid geometry
+    for (let i = 0; i <= segments; i++) {
+        const y = (i * segmentSize) - halfSize;
+
+        for (let j = 0; j <= segments; j++) {
+            const x = (j * segmentSize) - halfSize;
+            vertices.push(x, - y, 0);
+            normals.push(0, 0, 1);
+        }
+    }
+
+    // generate indices (data for element array buffer)
+    for (let i = 0; i < segments; i++) {
+        for (let j = 0; j < segments; j++) {
+            const a = i * (segments + 1) + (j + 1);
+            const b = i * (segments + 1) + j;
+            const c = (i + 1) * (segments + 1) + j;
+            const d = (i + 1) * (segments + 1) + (j + 1);
+
+            // generate two faces (triangles) per iteration
+            indices.push(a, b, d); // face one
+            indices.push(b, c, d); // face two
+        }
+    }
+
+    geometry.setIndex(indices);
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+    //geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+    return geometry;
+}
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -17,7 +68,8 @@ const light = new THREE.PointLight(0xff0000, 1, 100);
 light.position.set(20, 30, 0);
 scene.add(light);
 
-const geometry = new THREE.BoxGeometry();
+//const geometry = new THREE.BoxGeometry();
+const geometry = generateGeometry();
 
 const material = new THREE.MeshLambertMaterial({ color: 0xff00ff });
 const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00, opacity: 0.5, wireframe: true, transparent: true });
