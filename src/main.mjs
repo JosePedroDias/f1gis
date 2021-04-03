@@ -1,7 +1,8 @@
 import { loadSprites, drawPolygon, drawRect, drawText, drawSprite, runGameLoop } from './canvas.mjs';
 import { subscribeKeys, keysDown } from './kbd.mjs';
 import { projectFactory } from './gis.mjs';
-import { limits2, parametric, movePolar, clamp, wrapAngle, RAD2DEG } from './math.mjs';
+import { limits2, parametric, movePolar, clamp, wrapAngle, mulVScalar, RAD2DEG } from './math.mjs';
+import { drawCircle } from './canvas.mjs';
 
 async function run() {
     //const res = await fetch('./assets/maps/portimao.geojson');
@@ -14,6 +15,7 @@ async function run() {
     const ZOOM = 16;
     const ZOOM_TO_METERS = 0.015; // has not been calculated, estimated by trial and error
     const FONT_SIZE = 10;
+    const CAR_SPRITE_ZOOM = 1 / 15;
     const ctx = document.querySelector('canvas').getContext('2d');
     ctx.font = `${FONT_SIZE}px sans-serif`;
     ctx.textAlign = 'center';
@@ -81,9 +83,9 @@ async function run() {
     subscribeKeys();
 
     // cam
-    let center = [0, 0];
-    let zoom = 1;
-    let rotation = 0;
+    let cam_center = [0, 0];
+    let cam_zoom = 4;
+    let cam_angle = 0;
 
     // car
     let car_pos = [0, 0];
@@ -103,19 +105,37 @@ async function run() {
 
         ctx.translate(WINDOW_SIZE / 2, WINDOW_SIZE / 2);
 
-        //rotation += dt * 0.2;
-        ctx.rotate(rotation);
-
-        //zoom *= 1.002;
-        ctx.scale(zoom, zoom);
-
+        //rotation += dt * 0.1;
+        //zoom *= 1.001;
         //center[0] += dt * 10;
-        ctx.translate(center[0], center[1]);
+        //rotation = -car_angle - Math.PI / 2;
+        //center = mulVScalar(-1, car_pos);
+
+        // TRACK
+        ctx.save();
+        ctx.rotate(cam_angle);
+        ctx.translate(cam_center[0], cam_center[1]);
+        ctx.scale(cam_zoom, cam_zoom);
 
         drawPolygon(ctx, trackMargins[0], { close: true });
         drawPolygon(ctx, trackMargins[1], { close: true });
         drawPolygon(ctx, pitMargins[0]);
         drawPolygon(ctx, pitMargins[1]);
+
+        //drawCircle(ctx, car_pos, SPRITE_DIMS[1]);
+
+        ctx.restore();
+
+        //CAR
+        ctx.save();
+        ctx.rotate(cam_angle);
+        ctx.translate(cam_center[0], cam_center[1]);
+        ctx.scale(cam_zoom * CAR_SPRITE_ZOOM, cam_zoom * CAR_SPRITE_ZOOM);
+        //ctx.scale(zoom, zoom);
+
+        drawCircle(ctx, car_pos, SPRITE_DIMS[1]);
+        drawSprite(ctx, sprites[0], SPRITE_DIMS, car_pos, car_angle);
+        ctx.restore();
 
         if (keysDown['ArrowUp']) {
             car_speed = clamp(car_speed + dAccel * dt, -20, 400);
@@ -129,14 +149,37 @@ async function run() {
         if (keysDown['ArrowRight']) {
             car_angle = wrapAngle(car_angle + dTurn * dt);
         }
+
+        if (keysDown['a']) {
+            cam_zoom *= 1 + (0.5 * dt);
+        }
+        if (keysDown['d']) {
+            cam_zoom *= 1 - (0.5 * dt);
+        }
+        if (keysDown['s']) {
+            cam_center[1] += 100 * dt;
+        }
+        if (keysDown['x']) {
+            cam_center[1] -= 100 * dt;
+        }
+        if (keysDown['z']) {
+            cam_center[0] += 100 * dt;
+        }
+        if (keysDown['c']) {
+            cam_center[0] -= 100 * dt;
+        }
+        if (keysDown['f']) {
+            cam_angle = wrapAngle(cam_angle + dt * 1);
+        }
+        if (keysDown['v']) {
+            cam_angle = wrapAngle(cam_angle - dt * 1);
+        }
+
         //if (keysJustDown[ARROW_UP]) { console.log('UP JUST GOT PRESSED'); }
 
         if (car_speed !== 0) {
             car_pos = movePolar(car_pos, car_angle, car_speed * dt);
         }
-
-        //ctx.scale(0.5, 0.5);
-        drawSprite(ctx, sprites[0], SPRITE_DIMS, car_pos, car_angle);
 
         ctx.restore();
     }
