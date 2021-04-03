@@ -1,7 +1,5 @@
 import { updateKeys } from './kbd.mjs';
-import { parametric } from './math.mjs';
-
-const π2 = 2 * Math.PI;
+import { parametric, turtle, πhalf, π2 } from './math.mjs';
 
 const raf = window.requestAnimationFrame ||
     window.mozRequestAnimationFrame ||
@@ -57,8 +55,36 @@ export function drawRect(ctx, [x1, y1], [x2, y2], { fill, clear } = {}) {
 
 export function drawLine(ctx, [x1, y1], [x2, y2]) {
     ctx.beginPath();
-    ctx.moveTo([x1, y1]);
-    ctx.lineTo([x2, y2]);
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.stroke();
+}
+
+export function drawArrow(ctx, p0, angle, length = 20, tipLength = 10, tipAngle = πhalf * 1.75) {
+    const t = turtle(p0, angle);
+    let a, b, c, d;
+    t
+        .save()
+        .forward(-length / 2)
+        .getP(p => { a = p; })
+        .restore()
+        .forward(length / 2)
+        .getP(p => { b = p; })
+        .save()
+        .turn(tipAngle)
+        .forward(tipLength)
+        .getP(p => { c = p; })
+        .restore()
+        .turn(-tipAngle)
+        .forward(tipLength)
+        .getP(p => { d = p; });
+
+    ctx.beginPath();
+    ctx.moveTo(a[0], a[1]);
+    ctx.lineTo(b[0], b[1]);
+    ctx.lineTo(c[0], c[1]);
+    ctx.moveTo(b[0], b[1]);
+    ctx.lineTo(d[0], d[1]);
     ctx.stroke();
 }
 

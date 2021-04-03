@@ -1,11 +1,12 @@
-const sin = Math.sin;
-const cos = Math.cos;
-
-const π = Math.PI;
-const π2 = 2 * π;
+export const π = Math.PI;
+export const πhalf = π / 2;
+export const π2 = 2 * π;
 
 export const DEG2RAD = π / 180;
 export const RAD2DEG = 180 / π;
+
+const sin = Math.sin;
+const cos = Math.cos;
 
 export function limits(arr) {
     let m = Number.MAX_VALUE;
@@ -158,4 +159,54 @@ export function parametric(points, angle, dist, closed) {
     }
 
     return points2;
+}
+
+export function turtle(startP = [0, 0], startAngle = 0) {
+    const state = {
+        p: [...startP],
+        a: startAngle
+    };
+    const stack = [];
+
+    const api = {
+        get p() { return state.p; },
+        get a() { return state.a; },
+        set p(arr) { state.p = [...arr]; },
+        set a(ang) { state.a = ang; },
+        getP(fn) {
+            fn(state.p);
+            return this;
+        },
+        getA(fn) {
+            fn(state.a);
+            return this;
+        },
+        restore() {
+            const s = stack.pop();
+            state.p = [...s.p];
+            state.a = s.a;
+            return this;
+        },
+        save() {
+            stack.push({
+                p: [...state.p],
+                a: state.a
+            });
+            return this;
+        },
+        forward(dist = 1) {
+            state.p = movePolar(state.p, state.a, dist);
+            return this;
+        },
+        right(dist = 1) {
+            state.p = movePolar(state.p, state.a + πhalf, dist);
+            return this;
+        },
+        turn(angle = πhalf) {
+            state.a += angle;
+            return this;
+        }
+    };
+
+    return api;
 }

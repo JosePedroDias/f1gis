@@ -5,7 +5,7 @@ https://www.openstreetmap.org/#map=16/37.2303/-8.6279
 import { projectFactory } from './gis.mjs';
 import { limits2, parametric } from './math.mjs';
 
-const ZOOM_TO_METERS = 0.015; // has not been calculated, estimated by trial and error
+const ZOOM_TO_METERS = 0.000003; // has not been calculated, estimated by trial and error
 
 const GJ_GEO_TYPE_LS = 'LineString';
 
@@ -27,7 +27,7 @@ export async function parseTrack(url, { zoom } = {}) {
 
     const api = {
         fromMeters(dim) {
-            return dim * zoom * ZOOM_TO_METERS;
+            return dim * Math.pow(2, zoom) * ZOOM_TO_METERS;
         }
     }
     const output = {

@@ -33,4 +33,3 @@ This project showcases the adoption of the [open race track format](https://gith
 - [debug 2D map](https://josepedrodias.github.io/f1gis/)
 - [sample 2D](https://josepedrodias.github.io/f1gis/2D.html)
 - [sample 3D](https://josepedrodias.github.io/f1gis/3D.html)
-- 
