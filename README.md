@@ -34,8 +34,6 @@ Will also try to create a simple Javascript racing game using the parsed track i
 
 ## Bugs
 
-- wrong orientation at track start/end
-
 ## Samples:
 
 - [debug 2D map](https://josepedrodias.github.io/f1gis/debug2d.html) - renders features already supported by the parser, with auxiliary info to help debug any issues

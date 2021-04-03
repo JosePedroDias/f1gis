@@ -158,11 +158,14 @@ export function parametric(points, angle, dist, closed) {
         let next = points[idx(i + 1)];
 
         if (i === 0 && distance2(prev, curr) === 0) {
-            console.log('override 0');
+            //console.log('override first');
             prev = points[idx(i - 2)];
         }
-
-        console.log(`i: ${i}, prev-curr dist: ${distance2(prev, curr)}, curr-next dist: ${distance2(curr, next)}`);
+        if (i === l - 1 && distance2(prev, curr) === 0) {
+            //console.log('override last');
+            prev = points[idx(i + 2)];
+        }
+        //console.log(`i: ${i}, prev-curr dist: ${distance2(prev, curr)}, curr-next dist: ${distance2(curr, next)}`);
 
         let d = subV(curr, prev);
         let a1 = Math.atan2(d[1], d[0]);
