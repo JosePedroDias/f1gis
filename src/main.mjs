@@ -52,7 +52,7 @@ async function run() {
 
         ctx.strokeStyle = data.pit.stroke;
         ctx.setLineDash(DASHED);
-        drawPolygon(ctx, data.pit.center, { close: true });
+        drawPolygon(ctx, data.pit.center);
         ctx.setLineDash(SOLID);
         drawPolygon(ctx, data.pit.left);
         drawPolygon(ctx, data.pit.right);
