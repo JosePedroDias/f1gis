@@ -70,7 +70,7 @@ export async function parseTrack(url, { zoom } = {}) {
                 const width = props[RT_WIDTH];
                 if (isNaN(width)) { throw new Error(`${kind} missing property rt:width!`) }
                 const w = api.fromMeters(width);
-                const closed = false;
+                const closed = kind === RT_KIND_TRACK;
 
                 bag.properties = props;
                 bag.left = parametric(coords3, -Math.PI / 2, w, closed)

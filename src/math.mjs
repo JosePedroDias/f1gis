@@ -60,12 +60,24 @@ export function lerp2(a, b, i) {
     return [a[0] * I + b[0] * i, a[1] * I + b[1] * i];
 }
 
+export function distance([x, y]) {
+    return Math.sqrt(x * x + y * y);
+}
+
+export function distance2([x1, y1], [x2, y2]) {
+    const dx = x1 - x2;
+    const dy = y1 - y2;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
 export function distanceSquared([x, y]) {
     return x * x + y * y;
 }
 
-export function distance([x, y]) {
-    return Math.sqrt(x * x + y * y);
+export function distanceSquared2([x1, y1], [x2, y2]) {
+    const dx = x1 - x2;
+    const dy = y1 - y2;
+    return dx * dx + dy * dy;
 }
 
 export function normalized(v) {
@@ -141,9 +153,16 @@ export function parametric(points, angle, dist, closed) {
 
     let i = 0;
     while (i < l) {
-        const prev = points[idx(i - 1)];
-        const curr = points[idx(i)];
-        const next = points[idx(i + 1)];
+        let prev = points[idx(i - 1)];
+        let curr = points[idx(i)];
+        let next = points[idx(i + 1)];
+
+        if (i === 0 && distance2(prev, curr) === 0) {
+            console.log('override 0');
+            prev = points[idx(i - 2)];
+        }
+
+        console.log(`i: ${i}, prev-curr dist: ${distance2(prev, curr)}, curr-next dist: ${distance2(curr, next)}`);
 
         let d = subV(curr, prev);
         let a1 = Math.atan2(d[1], d[0]);

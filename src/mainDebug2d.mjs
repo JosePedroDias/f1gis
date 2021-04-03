@@ -1,10 +1,6 @@
-import { loadSprites, drawPolygon, drawRect, drawText, drawSprite, drawIndices, runGameLoop } from './canvas.mjs';
-import { subscribeKeys, keysDown } from './kbd.mjs';
-import { movePolar, clamp, wrapAngle, addV, subV, mulVScalar, RAD2DEG } from './math.mjs';
-import { drawCircle } from './canvas.mjs';
 import { parseTrack } from './parseTrack.mjs';
-import { toPolar } from './math.mjs';
-import { drawArrow } from './canvas.mjs';
+import { drawPolygon, drawArrow, drawIndices, drawRect, drawCircle, drawText, } from './canvas.mjs';
+import { subV, mulVScalar, toPolar } from './math.mjs';
 
 async function run() {
     const WINDOW_SIZE = 1400;
@@ -17,7 +13,10 @@ async function run() {
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#330';
 
-    const data = await parseTrack('./assets/maps/portimao.2d.rt.geojson', { zoom: ZOOM });
+    const mapName = location.hash?.substring(1) || 'portimao.2d.rt.geojson';
+    // #estoril.2d.rt.geojson
+
+    const data = await parseTrack(`./assets/maps/${mapName}`, { zoom: ZOOM });
     console.log('data', data);
     window.data = data;
 
