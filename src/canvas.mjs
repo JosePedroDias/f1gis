@@ -1,4 +1,5 @@
 import { updateKeys } from './kbd.mjs';
+import { parametric } from './math.mjs';
 
 const π2 = 2 * Math.PI;
 
@@ -69,6 +70,13 @@ export function drawCircle(ctx, [cx, cy], r, { fill } = {}) {
     ctx.beginPath();
     ctx.arc(cx, cy, r, 0, π2);
     ctx[fill ? 'fill' : 'stroke']();
+}
+
+export function drawIndices(ctx, poly, angle, dist, formatter = (i) => `${i}`) {
+    const poly2 = parametric(poly, angle, dist);
+    for (let [i, p] of Object.entries(poly2)) {
+        drawText(ctx, p, formatter(i));
+    }
 }
 
 //  dPos

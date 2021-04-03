@@ -46,8 +46,8 @@ export async function parseTrack(url, { zoom } = {}) {
         const width = limits[0][1] - limits[0][0];
         const height = limits[1][1] - limits[1][0];
         output.dimensions = [width, height];
-        [ox, oy] = [limits[0][0] - (0 - width) / 2, limits[1][0] - (0 - height) / 2];
-        //[ox, oy] = [limits[0][0], limits[1][0]];
+        //[ox, oy] = [limits[0][0] - (0 - width) / 2, limits[1][0] - (0 - height) / 2];
+        [ox, oy] = [limits[0][0], limits[1][0]];
         output.center = [ox, oy];
     }
 
