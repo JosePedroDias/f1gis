@@ -911,7 +911,7 @@
             "properties": {
                 "oneway": "yes",
                 "rt:kind": "pit",
-                "rt:width": "14"
+                "rt:width": "12"
             },
             "geometry": {
                 "type": "LineString",

@@ -28,9 +28,6 @@ function generateRailGeometry(leftRail, rightRail, loops) {
 
     const crossSectionSize = 2;
 
-    //const indicesSize = waySize * crossSectionSize;
-    //const trisSize = (waySize - (loops ? 2 : 1)) * (crossSectionSize - 1) * 2;
-
     const vertices = [];
     const indices = [];
 
@@ -60,32 +57,12 @@ function generateRailGeometry(leftRail, rightRail, loops) {
         indices.push(a, b, d);
     }
 
-    //console.log('vertices', vertices);
-    //console.log('indices', indices);
-
     geometry.setIndex(indices);
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
     geometry.computeVertexNormals();
 
     return geometry;
 }
-
-// -COLOR -SIZE
-const VERTEX_SHADER = `attribute float size;
-varying vec3 vColor;
-void main() {
-    vColor = vec3(1.0, 1.0, 1.0); // was color
-    vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
-    gl_PointSize = 1.0 * ( 300.0 / -mvPosition.z ); // size ~ 10
-    gl_Position = projectionMatrix * mvPosition;
-}`;
-
-const FRAGMENT_SHADER = `uniform sampler2D pointTexture;
-varying vec3 vColor;
-void main() {
-    gl_FragColor = vec4( vColor, 1.0 );
-    gl_FragColor = gl_FragColor * texture2D( pointTexture, gl_PointCoord );
-}`;
 
 async function run() {
     const scene = new THREE.Scene();
@@ -98,40 +75,29 @@ async function run() {
     const helper = new THREE.GridHelper(10, 10);
     scene.add(helper);
 
-    const light = new THREE.PointLight(0xff0000, 1, 100);
+    const light = new THREE.PointLight(0xffffff, 1, 100);
     light.position.set(20, 30, 0);
     scene.add(light);
 
     const mapName = location.hash?.substring(1) || 'portimao.2d.rt.geojson';
     const data = await parseTrack(`./assets/tracks/${mapName}`, { zoom: ZOOM });
 
-    const geometry = generateRailGeometry(data.track.left, data.track.right, true);
+    const trackGroup = new THREE.Group();
 
-    /* const uniforms = {
-        pointTexture: { value: new THREE.TextureLoader().load('./assets/textures/spark1.png') }
-    };
+    const lambertMat = new THREE.MeshLambertMaterial({ color: 0xaaaaaa });
+    const wireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.5, wireframe: true, transparent: true });
 
-    const shaderMaterial = new THREE.ShaderMaterial({
-        uniforms: uniforms,
-        vertexShader: VERTEX_SHADER,
-        fragmentShader: FRAGMENT_SHADER,
-        blending: THREE.AdditiveBlending,
-        depthTest: false,
-        transparent: true,
-        vertexColors: true
-    });
-
-    const mesh = new THREE.Points(geometry, shaderMaterial);
-    scene.add(mesh);*/
-
-    const material = new THREE.MeshLambertMaterial({ color: 0xff00ff });
-    const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00, opacity: 0.5, wireframe: true, transparent: true });
-
-    const mesh = new THREE.Mesh(geometry, material);
-    const mesh2 = new THREE.Mesh(geometry, material2);
-
-    mesh.add(mesh2);
-    scene.add(mesh);
+    const geometries = [
+        [data.track.left, data.track.right, true],
+        [data.pit.left, data.pit.right, false]
+    ];
+    for (let params of geometries) {
+        const geometry = generateRailGeometry(...params);
+        const mesh = new THREE.Mesh(geometry, lambertMat);
+        mesh.add(new THREE.Mesh(geometry, wireMat));
+        trackGroup.add(mesh);
+    }
+    scene.add(trackGroup);
 
     /* const oe = new OBJExporter();
     const obj = oe.parse(mesh);
@@ -145,8 +111,8 @@ async function run() {
 
     function animate() {
         requestAnimationFrame(animate);
-        //mesh.rotation.x += 0.005;
-        //mesh.rotation.y += 0.01;
+        //trackGroup.rotation.x += 0.005;
+        //trackGroup.rotation.y += 0.01;
         controls.update();
         renderer.render(scene, camera);
     };
