@@ -34,6 +34,12 @@ Will also try to create a simple Javascript racing game using the parsed track i
 
 ## Bugs
 
+
+## Tools
+
+- JOSM (`brew install josm`)
+- vscode with geojson as json (see .vscode/settings.json)
+
 ## Samples:
 
 - [debug 2D map](https://josepedrodias.github.io/f1gis/debug2d.html) - renders features already supported by the parser, with auxiliary info to help debug any issues

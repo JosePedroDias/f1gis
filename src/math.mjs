@@ -145,7 +145,7 @@ export function averageAngles(arr) {
     return Math.atan2(v[1], v[0]);
 }
 
-export function parametric(points, angle, dist, closed) {
+export function parametric(points, angle, dists, closed) {
     const l = points.length;
     const points2 = [];
 
@@ -174,6 +174,7 @@ export function parametric(points, angle, dist, closed) {
         let a2 = Math.atan2(d[1], d[0]);
 
         let a = averageAngles([a1, a2]);
+        const dist = dists instanceof Array ? dists[i] : dists;
         const p = movePolar(curr, a + angle, dist);
 
         points2.push(p);

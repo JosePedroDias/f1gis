@@ -5,8 +5,21 @@
         {
             "type": "Feature",
             "properties": {
-                "rt:kind": "pit-stop",
-                "oneway": "yes"
+                "rt:width": "10"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    -9.22135949671,
+                    38.70966700040
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "oneway": "yes",
+                "rt:kind": "pit-stop"
             },
             "geometry": {
                 "type": "LineString",
@@ -38,6 +51,43 @@
                     [
                         -9.22149092227,
                         38.71033884638
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "oneway": "yes",
+                "rt:kind": "pit",
+                "rt:width": "12"
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        -9.22146142066,
+                        38.70992234527
+                    ],
+                    [
+                        -9.22150970042,
+                        38.71024466454
+                    ],
+                    [
+                        -9.22157407343,
+                        38.71062558545
+                    ],
+                    [
+                        -9.22158480227,
+                        38.71101069024
+                    ],
+                    [
+                        -9.22150433600,
+                        38.71111952382
+                    ],
+                    [
+                        -9.22137558997,
+                        38.71114045334
                     ]
                 ]
             }
@@ -78,8 +128,7 @@
             "type": "Feature",
             "properties": {
                 "oneway": "yes",
-                "rt:kind": "track",
-                "rt:width": "[8,null,12]"
+                "rt:kind": "track"
             },
             "geometry": {
                 "type": "LineString",
@@ -194,37 +243,13 @@
         {
             "type": "Feature",
             "properties": {
-                "rt:kind": "pit",
-                "rt:width": "12",
-                "oneway": "yes"
+                "rt:width": "8"
             },
             "geometry": {
-                "type": "LineString",
+                "type": "Point",
                 "coordinates": [
-                    [
-                        -9.22146142066,
-                        38.70992234527
-                    ],
-                    [
-                        -9.22150970042,
-                        38.71024466454
-                    ],
-                    [
-                        -9.22157407343,
-                        38.71062558545
-                    ],
-                    [
-                        -9.22158480227,
-                        38.71101069024
-                    ],
-                    [
-                        -9.22150433600,
-                        38.71111952382
-                    ],
-                    [
-                        -9.22137558997,
-                        38.71114045334
-                    ]
+                    -9.22132731020,
+                    38.70901398313
                 ]
             }
         }

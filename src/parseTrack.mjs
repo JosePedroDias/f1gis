@@ -15,12 +15,31 @@ const RT_WIDTH = 'rt:width';
 const RT_KIND_TRACK = 'track';
 const RT_KIND_PIT = 'pit';
 
+function parseProperty(s) {
+    if (isFinite(s)) {
+        return parseFloat(s);
+    } else if (s[0] === '[') {
+        return JSON.parse(s);
+    } else {
+        return s;
+    }
+}
+
 function parseOptionalArrayProperty(valueS, propName, expectedLength) {
-    const arrOrValue = JSON.parse(valueS);
+    const arrOrValue = parseProperty(valueS);
     if (arrOrValue instanceof Array) {
-        const arr = arrOrValue;
+        let arr = arrOrValue;
         if (arr.length !== expectedLength) {
-            throw new Error(`Expected ${expectedLength} elements in ${propName} but got ${arr.length}!`);
+            //throw new Error(`Expected ${expectedLength} elements in ${propName} but got ${arr.length}!`);
+            arr = arr.concat(new Array(expectedLength - arr.length).fill(null));
+        }
+        let ifNull = arr.find((el) => el !== null);
+        for (let [i, el] of Object.entries(arr)) {
+            if (el === null) {
+                arr[i] = ifNull;
+            } else {
+                ifNull = el;
+            }
         }
         return arr;
     } else {
@@ -81,21 +100,24 @@ export async function parseTrack(url, { zoom } = {}) {
             if ([RT_KIND_TRACK, RT_KIND_PIT].includes(kind)) {
                 let bag = kind === RT_KIND_TRACK ? output.track : output.pit;
 
-                props[RT_WIDTH] = parseFloat(props[RT_WIDTH]);
-
-                const width = props[RT_WIDTH];
-                if (isNaN(width)) { throw new Error(`${kind} missing property rt:width!`) }
-                const w = api.fromMeters(width);
+                props[RT_WIDTH] = parseOptionalArrayProperty(props[RT_WIDTH], RT_WIDTH, coords3.length);
+                let widths = props[RT_WIDTH];
+                //console.log('props[RT_WIDTH]', widths, isNaN(widths));
+                //if (isNaN(width)) { throw new Error(`${kind} missing property rt:width!`) }
+                widths = widths.map(api.fromMeters);
                 const closed = kind === RT_KIND_TRACK;
 
                 bag.properties = props;
-                bag.left = parametric(coords3, -Math.PI / 2, w, closed)
+                bag.left = parametric(coords3, -Math.PI / 2, widths, closed)
                 bag.center = coords3;
-                bag.right = parametric(coords3, Math.PI / 2, w, closed);
+                bag.right = parametric(coords3, Math.PI / 2, widths, closed);
             } else {
                 // TODO
                 //drawPolygon(ctx, coords3);
             }
+        } else {
+            console.warn(`Geometry type ${geo.type} ignored.`);
+            console.log(feature);
         }
     });
 
