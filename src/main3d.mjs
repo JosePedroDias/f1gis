@@ -14,8 +14,11 @@ import { parseTrack } from './parseTrack.mjs';
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_geometry_extrude_splines.html https://threejs.org/examples/#webgl_geometry_extrude_splines
 // https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry_custom_attributes_particles.html
 // TODO https://threejs.org/examples/#physics_ammo_rope
+// https://threejs.org/docs/#api/en/helpers/ArrowHelper
+// https://threejs.org/docs/?q=helper#api/en/helpers/AxesHelper
 
 const ZOOM = 16;
+const S = 1 / 40;
 
 function generateRailGeometry(leftRail, rightRail, loops) {
     const geometry = new THREE.BufferGeometry();
@@ -30,8 +33,6 @@ function generateRailGeometry(leftRail, rightRail, loops) {
 
     const vertices = [];
     const indices = [];
-
-    const S = 1 / 40;
 
     // vertices
     for (let wi = 0; wi < waySize; ++wi) {
@@ -81,22 +82,45 @@ async function run() {
 
     const mapName = location.hash?.substring(1) || 'portimao.2d.rt.geojson';
     const data = await parseTrack(`./assets/tracks/${mapName}`, { zoom: ZOOM });
+    //console.log('data', data);
 
     const trackGroup = new THREE.Group();
 
     const lambertMat = new THREE.MeshLambertMaterial({ color: 0xaaaaaa });
     const wireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.5, wireframe: true, transparent: true });
 
-    const geometries = [
+    // track parts
+    let parts = [
         [data.track.left, data.track.right, true],
         [data.pit.left, data.pit.right, false]
     ];
-    for (let params of geometries) {
+    for (let params of parts) {
         const geometry = generateRailGeometry(...params);
         const mesh = new THREE.Mesh(geometry, lambertMat);
         mesh.add(new THREE.Mesh(geometry, wireMat));
         trackGroup.add(mesh);
     }
+
+    // positions
+    parts = [
+        data.pitStop,
+        data.startingGrid
+    ];
+    for (let points of parts) {
+        for (let p_ of points) {
+            const p = [p_[0], 0, p_[1]];
+            const geometry = new THREE.SphereGeometry(0.02, 16, 16);
+            const mesh = new THREE.Mesh(geometry, lambertMat);
+            mesh.position.set(p[0] * S, p[1] * S, p[2] * S); // TODO
+            //mesh.add(new THREE.Mesh(geometry, wireMat));
+            trackGroup.add(mesh);
+
+            // TODO add directions to startingGrid?
+        }
+    }
+
+    // TODO checkpoints
+
     scene.add(trackGroup);
 
     /* const oe = new OBJExporter();

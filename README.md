@@ -31,7 +31,9 @@ Will also try to create a simple Javascript racing game using the parsed track i
 - sample apps
     - [x] debug drawing in canvas (WIP)
     - [ ] 2D example
+      - [x] render 2D track from parsed data
     - [ ] 3D example
+      - [x] render 3D track from parsed data
 
 ## Bugs
 
