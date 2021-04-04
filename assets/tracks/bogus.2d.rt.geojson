@@ -79,7 +79,8 @@
             "properties": {
                 "oneway": "yes",
                 "rt:kind": "track",
-                "rt:width": "[8,null,12]"
+                "rt:width": "12",
+                "__rt:width": "[8,null,12,null,null,15,25,10,5,10]"
             },
             "geometry": {
                 "type": "LineString",

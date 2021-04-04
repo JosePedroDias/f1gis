@@ -25,7 +25,7 @@ async function run() {
     const DASHED = [5, 15];
     const SOLID = [];
 
-    function formatterFactory(prefix) { return (i) => `${prefix}${i}` }
+    function formatterFactory(prefix = '', suffix = '') { return (i) => `${prefix}${i}${suffix}` }
     let fmt;
 
     const canvasDims = [WINDOW_SIZE, WINDOW_SIZE];
@@ -47,7 +47,7 @@ async function run() {
         drawPolygon(ctx, data.track.right, { close: true });
 
         ctx.globalAlpha = 0.5;
-        fmt = formatterFactory('T_');
+        fmt = formatterFactory();
         drawIndices(ctx, data.track.center, Math.PI / 2, 20, fmt);
         drawIndices(ctx, data.track.center, -Math.PI / 2, 20, fmt);
         ctx.globalAlpha = 1;
@@ -63,13 +63,13 @@ async function run() {
         drawPolygon(ctx, data.pit.right);
 
         ctx.globalAlpha = 0.5;
-        fmt = formatterFactory('P_');
+        fmt = formatterFactory('(', ')');
         drawIndices(ctx, data.pit.center, Math.PI / 2, 20, fmt);
         drawIndices(ctx, data.pit.center, -Math.PI / 2, 20, fmt);
         ctx.globalAlpha = 1;
     }
 
-    // STARTING TRACK POS AND DIR
+    // STARTING TRACK POS AND DIR, pitStop and startingGrid
     {
         const p0 = data.track.center[0];
         const p1 = data.track.center[1];
@@ -77,6 +77,20 @@ async function run() {
         const angleAtP0 = toPolar(v0)[0];
         ctx.strokeStyle = '#00F';
         drawArrow(ctx, p0, angleAtP0);
+
+        if (data.startingGrid) {
+            ctx.strokeStyle = '#077';
+            for (let p of data.startingGrid) {
+                drawCircle(ctx, p, 5);
+            }
+        }
+
+        if (data.pitStop) {
+            ctx.strokeStyle = '#770';
+            for (let p of data.pitStop) {
+                drawCircle(ctx, p, 5);
+            }
+        }
     }
 }
 

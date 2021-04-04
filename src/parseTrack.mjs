@@ -14,10 +14,20 @@ const RT_WIDTH = 'rt:width';
 
 const RT_KIND_TRACK = 'track';
 const RT_KIND_PIT = 'pit';
+const RT_KIND_PIT_STOP = 'pit-stop';
+const RT_KIND_STARTING_GRID = 'starting-grid';
+const RT_KIND_CHECKPOINT = 'checkpoint';
+
+const trueish = ['true', 'yes'];
+const falsy = ['false', 'no'];
 
 function parseProperty(s) {
     if (isFinite(s)) {
         return parseFloat(s);
+    } else if (trueish.includes(s)) {
+        return true;
+    } else if (falsy.includes(s)) {
+        return false;
     } else if (s[0] === '[') {
         return JSON.parse(s);
     } else {
@@ -68,6 +78,8 @@ export async function parseTrack(url, { zoom } = {}) {
     const output = {
         track: {}, // poly arrays (left, center and right)
         pit: {}, // poly arrays (left, center and right)
+        pitStop: [], // array of positions
+        startingGrid: [], // array of positions (in pecking order?)
         dimensions: [], // [w, h]
         center: [] // [x, y]
     }
@@ -111,9 +123,13 @@ export async function parseTrack(url, { zoom } = {}) {
                 bag.left = parametric(coords3, -Math.PI / 2, widths, closed)
                 bag.center = coords3;
                 bag.right = parametric(coords3, Math.PI / 2, widths, closed);
+            } else if (kind === RT_KIND_STARTING_GRID) {
+                output.startingGrid = coords3;
+            } else if (kind === RT_KIND_PIT_STOP) {
+                output.pitStop = coords3;
             } else {
-                // TODO
-                //drawPolygon(ctx, coords3);
+                console.warn(`rt-kind ${kind} ignored.`);
+                console.log(feature);
             }
         } else {
             console.warn(`Geometry type ${geo.type} ignored.`);

@@ -14,8 +14,8 @@ Will also try to create a simple Javascript racing game using the parsed track i
 - `rt.geojson` parsing completeness
     -  2D
         - [x] track and pit
+        - [x] starting-grid and pit-stop
         - [ ] checkpoints
-        - [ ] starting-grid and pit-stop
         - [ ] alignment-from-track
         - [ ] model and model-batch
         - [ ] track decorations
@@ -23,6 +23,7 @@ Will also try to create a simple Javascript racing game using the parsed track i
         - [ ] buildings
     - 3D
         - [ ] same support as 2D
+        - [ ] camber
         - [ ] cross-sections + track decorations
 - documentation
     - [ ] briefly document the parser, if it gets to a usable shape
