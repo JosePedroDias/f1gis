@@ -1,6 +1,6 @@
-import { loadSprites, drawPolygon, drawRect, drawText, drawSprite, drawIndices, runGameLoop } from './canvas.mjs';
+import { loadSprites, drawPolygon, drawRect, drawText, drawSprite, runGameLoop } from './canvas.mjs';
 import { subscribeKeys, keysDown } from './kbd.mjs';
-import { movePolar, clamp, wrapAngle, addV, subV, mulVScalar, RAD2DEG } from './math.mjs';
+import { movePolar, clamp, wrapAngle, RAD2DEG } from './math.mjs';
 import { drawCircle } from './canvas.mjs';
 import { parseTrack } from './parseTrack.mjs';
 
@@ -18,7 +18,8 @@ async function run() {
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#330';
 
-    const data = await parseTrack('./assets/tracks/portimao.2d.rt.geojson', { zoom: ZOOM });
+    const mapName = location.hash?.substring(1) || 'portimao.2d.rt.geojson';
+    const data = await parseTrack(`./assets/tracks/${mapName}`, { zoom: ZOOM });
 
     function drawTrack() {
         drawPolygon(ctx, data.track.left, { close: true });

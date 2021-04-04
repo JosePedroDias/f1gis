@@ -14,10 +14,6 @@ async function run() {
     ctx.fillStyle = '#330';
 
     const mapName = location.hash?.substring(1) || 'portimao.2d.rt.geojson';
-    // #estoril.2d.rt.geojson
-    // #debug.2d.rt.geojson
-    // #debug_beta.2d.rt.geojson
-
     const data = await parseTrack(`./assets/tracks/${mapName}`, { zoom: ZOOM });
     console.log('data', data);
     window.data = data;

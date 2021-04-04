@@ -1,12 +1,16 @@
 import * as THREE from '../external/three.mjs';
 import { OrbitControls } from '../external/OrbitControls.mjs';
 
+import { parseTrack } from './parseTrack.mjs';
+
 // https://threejs.org/docs
 // TODO https://threejs.org/docs/index.html#api/en/lights/shadows/DirectionalLightShadow
 // TODO https://github.com/mrdoob/three.js/blob/master/examples/webgl_buffergeometry.html
 // https://threejs.org/examples/#webgl_buffergeometry_indexed
 // https://threejs.org/examples/#webgl_buffergeometry
 // TODO https://threejs.org/examples/#physics_ammo_rope
+
+const ZOOM = 16;
 
 function generateGeometry() {
     const geometry = new THREE.BufferGeometry();
@@ -54,44 +58,51 @@ function generateGeometry() {
     return geometry;
 }
 
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+async function run() {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-const helper = new THREE.GridHelper(10, 10);
-scene.add(helper);
+    const helper = new THREE.GridHelper(10, 10);
+    scene.add(helper);
 
-const light = new THREE.PointLight(0xff0000, 1, 100);
-light.position.set(20, 30, 0);
-scene.add(light);
+    const light = new THREE.PointLight(0xff0000, 1, 100);
+    light.position.set(20, 30, 0);
+    scene.add(light);
 
-//const geometry = new THREE.BoxGeometry();
-const geometry = generateGeometry();
+    const mapName = location.hash?.substring(1) || 'portimao.2d.rt.geojson';
+    const data = await parseTrack(`./assets/tracks/${mapName}`, { zoom: ZOOM });
 
-const material = new THREE.MeshLambertMaterial({ color: 0xff00ff });
-const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00, opacity: 0.5, wireframe: true, transparent: true });
+    //const geometry = new THREE.BoxGeometry();
+    const geometry = generateGeometry(data);
 
-const mesh = new THREE.Mesh(geometry, material);
-const mesh2 = new THREE.Mesh(geometry, material2);
+    const material = new THREE.MeshLambertMaterial({ color: 0xff00ff });
+    const material2 = new THREE.MeshBasicMaterial({ color: 0x00ff00, opacity: 0.5, wireframe: true, transparent: true });
 
-mesh.add(mesh2);
-scene.add(mesh);
+    const mesh = new THREE.Mesh(geometry, material);
+    const mesh2 = new THREE.Mesh(geometry, material2);
 
-camera.position.y = 3;
-camera.position.z = 5;
+    mesh.add(mesh2);
+    scene.add(mesh);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.update();
+    camera.position.y = 3;
+    camera.position.z = 5;
 
-const animate = function () {
-    requestAnimationFrame(animate);
-    //mesh.rotation.x += 0.005;
-    //mesh.rotation.y += 0.01;
+    const controls = new OrbitControls(camera, renderer.domElement);
     controls.update();
-    renderer.render(scene, camera);
-};
 
-animate();
+    function animate() {
+        requestAnimationFrame(animate);
+        //mesh.rotation.x += 0.005;
+        //mesh.rotation.y += 0.01;
+        controls.update();
+        renderer.render(scene, camera);
+    };
+
+    animate();
+}
+
+run();
