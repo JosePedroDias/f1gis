@@ -15,6 +15,22 @@ const RT_WIDTH = 'rt:width';
 const RT_KIND_TRACK = 'track';
 const RT_KIND_PIT = 'pit';
 
+function parseOptionalArrayProperty(valueS, propName, expectedLength) {
+    const arrOrValue = JSON.parse(valueS);
+    if (arrOrValue instanceof Array) {
+        const arr = arrOrValue;
+        if (arr.length !== expectedLength) {
+            throw new Error(`Expected ${expectedLength} elements in ${propName} but got ${arr.length}!`);
+        }
+        return arr;
+    } else {
+        const value = arrOrValue;
+        const arr = new Array(expectedLength);
+        arr.fill(value);
+        return arr;
+    }
+}
+
 export async function parseTrack(url, { zoom } = {}) {
     const res = await fetch(url);
     const data = await res.json();

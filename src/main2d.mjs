@@ -18,7 +18,7 @@ async function run() {
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#330';
 
-    const data = await parseTrack('./assets/maps/portimao.2d.rt.geojson', { zoom: ZOOM });
+    const data = await parseTrack('./assets/tracks/portimao.2d.rt.geojson', { zoom: ZOOM });
 
     function drawTrack() {
         drawPolygon(ctx, data.track.left, { close: true });

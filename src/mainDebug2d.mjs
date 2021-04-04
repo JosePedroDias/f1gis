@@ -16,7 +16,7 @@ async function run() {
     const mapName = location.hash?.substring(1) || 'portimao.2d.rt.geojson';
     // #estoril.2d.rt.geojson
 
-    const data = await parseTrack(`./assets/maps/${mapName}`, { zoom: ZOOM });
+    const data = await parseTrack(`./assets/tracks/${mapName}`, { zoom: ZOOM });
     console.log('data', data);
     window.data = data;
 
