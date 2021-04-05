@@ -24,18 +24,26 @@ function convertPoint([x, z]) {
     return [x * S, 0, z * S];
 }
 
-function throughSpline(points, closed) {
-    const spline = new THREE.CatmullRomCurve3(points.map(p_ => {
+function throughSpline(points_, closed) {
+    const points = points_.map(p_ => {
         const p = convertPoint(p_);
         return new THREE.Vector3(p[0], p[1], p[2]);
-    }));
-    //spline.curveType = 'catmullrom'; // centripetal, chordal, catmullrom
-    //spline.tension = // only relevant for CMR
+    });
+    const spline = new THREE.CatmullRomCurve3(points);
+    spline.curveType = 'centripetal'; // centripetal, chordal, catmullrom
     spline.closed = closed;
+    //spline.tension = // only relevant for CMR
     //const segments = tubeGeometry.tangents.length;
-    //https://threejs.org/docs/#api/en/extras/core/Curve
-    const out = spline.getPoints(points.length * 2 + 1).map(({ x, y, z }) => [x, y, z]);
-    return out;
+    //https://threejs.org/docs/#api/en/extras/core/Curve getPoints getSpacedPoints getPointAt getTangentAt
+    //spline.computeFrenetFrames(); // fails
+    const out1 = spline.getPoints(points.length * 2);
+    /* const l2 = points.length * 2;
+    const out1 = [];
+    for (let i = 0; i <= l2; ++i) {
+        out1.push(spline.getPointAt(i / l2));
+    } */
+    const out2 = out1.map(({ x, y, z }) => [x, y, z]);
+    return out2;
 }
 
 function generateRailGeometry(leftRail, rightRail, closed) {
@@ -58,6 +66,7 @@ function generateRailGeometry(leftRail, rightRail, closed) {
         const p1 = rails[1][wi];
         const crossSize = [ // TODO: injecting Y for now
             convertPoint(p0), convertPoint(p1)
+            //p0, p1
         ];
         for (let csi = 0; csi < crossSectionSize; ++csi) {
             const p = crossSize[csi];
