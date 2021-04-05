@@ -20,10 +20,28 @@ import { parseTrack } from './parseTrack.mjs';
 const ZOOM = 16;
 const S = 1 / 40;
 
-function generateRailGeometry(leftRail, rightRail, loops) {
+function convertPoint([x, z]) {
+    return [x * S, 0, z * S];
+}
+
+function throughSpline(points, closed) {
+    const spline = new THREE.CatmullRomCurve3(points.map(p_ => {
+        const p = convertPoint(p_);
+        return new THREE.Vector3(p[0], p[1], p[2]);
+    }));
+    //spline.curveType = 'catmullrom'; // centripetal, chordal, catmullrom
+    //spline.tension = // only relevant for CMR
+    spline.closed = closed;
+    //const segments = tubeGeometry.tangents.length;
+    //https://threejs.org/docs/#api/en/extras/core/Curve
+    const out = spline.getPoints(points.length * 2 + 1).map(({ x, y, z }) => [x, y, z]);
+    return out;
+}
+
+function generateRailGeometry(leftRail, rightRail, closed) {
     const geometry = new THREE.BufferGeometry();
 
-    const rails = [leftRail, rightRail];
+    const rails = [leftRail, rightRail];//.map(points => throughSpline(points, closed));
 
     const waySize = leftRail.length;
 
@@ -39,8 +57,7 @@ function generateRailGeometry(leftRail, rightRail, loops) {
         const p0 = rails[0][wi];
         const p1 = rails[1][wi];
         const crossSize = [ // TODO: injecting Y for now
-            [p0[0] * S, 0, p0[1] * S],
-            [p1[0] * S, 0, p1[1] * S]
+            convertPoint(p0), convertPoint(p1)
         ];
         for (let csi = 0; csi < crossSectionSize; ++csi) {
             const p = crossSize[csi];
@@ -108,10 +125,10 @@ async function run() {
     ];
     for (let points of parts) {
         for (let p_ of points) {
-            const p = [p_[0], 0, p_[1]];
+            const p = convertPoint(p_)
             const geometry = new THREE.SphereGeometry(0.02, 16, 16);
             const mesh = new THREE.Mesh(geometry, lambertMat);
-            mesh.position.set(p[0] * S, p[1] * S, p[2] * S); // TODO
+            mesh.position.set(p[0], p[1], p[2]);
             //mesh.add(new THREE.Mesh(geometry, wireMat));
             trackGroup.add(mesh);
 
