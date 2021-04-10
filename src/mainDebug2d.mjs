@@ -12,9 +12,13 @@ const SECTOR_COLORS = {
 const DRS_COLOR = '#00c500';
 
 async function run() {
-    const WINDOW_SIZE = 2000;
-    const ZOOM = 17;
+    const hash = (location.hash?.substring(1) || '').split(',');
+    const canvasEl = document.querySelector('canvas');
+
+    const WINDOW_SIZE = canvasEl.getBoundingClientRect().width;
     const FONT_SIZE = 14;
+    const ZOOM = hash[1] ? Number(hash[1]) : 17;
+    const mapName = hash[0] || 'portimao.2d.rt.geojson';
 
     const ctx = document.querySelector('canvas').getContext('2d');
     ctx.font = `${FONT_SIZE}px sans-serif`;
@@ -25,7 +29,7 @@ async function run() {
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#330';
 
-    const mapName = location.hash?.substring(1) || 'portimao.2d.rt.geojson';
+
     const data = await parseTrack(`./assets/tracks/${mapName}`, { zoom: ZOOM });
     console.log('data', data);
     window.data = data;

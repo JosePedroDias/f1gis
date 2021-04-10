@@ -190,8 +190,10 @@ export async function parseTrack(url, { zoom } = {}) {
                     bag = output.drs;
                     k = RT_POINT_TAG_DRS;
                     isArray = true;
-                } else if (propName === RT_POINT_TAG_RACEWAY && [RT_VALUE_START_FINISH, RT_VALUE_FINISH].includes(props[RT_POINT_TAG_RACEWAY])) {
-                    output._racewayStartFinish = coord;
+                } else if (propName === RT_POINT_TAG_RACEWAY) {
+                    if ([RT_VALUE_START_FINISH, RT_VALUE_FINISH].includes(props[RT_POINT_TAG_RACEWAY])) {
+                        output._racewayStartFinish = coord;
+                    }
                 }
                 else {
                     console.warn(`Prop ${propName} ignored.`);
