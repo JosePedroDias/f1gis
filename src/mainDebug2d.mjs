@@ -1,6 +1,7 @@
 import { parseTrack } from './parseTrack.mjs';
 import { drawPolygon, drawArrow, drawCircle, drawText, } from './canvas.mjs';
-import { subV, mulVScalar, toPolar } from './math.mjs';
+import { subV, mulVScalar, toPolar, parametric } from './math.mjs';
+import { turtle } from './math.mjs';
 
 const SECTOR_COLORS = {
     1: "#ff0000",
@@ -11,12 +12,15 @@ const SECTOR_COLORS = {
 const DRS_COLOR = '#00c500';
 
 async function run() {
-    const WINDOW_SIZE = 1400;
+    const WINDOW_SIZE = 2000;
     const ZOOM = 17;
     const FONT_SIZE = 14;
 
     const ctx = document.querySelector('canvas').getContext('2d');
     ctx.font = `${FONT_SIZE}px sans-serif`;
+    //ctx.lineJoin = 'round';
+    //ctx.lineCap = 'round';
+    ctx.miterLimit = 20;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#330';
@@ -26,11 +30,13 @@ async function run() {
     console.log('data', data);
     window.data = data;
 
-    const DASHED = [5, 15];
+    //const DASHED = [5, 15];
+    const DASHED = [2, 2];
     const SOLID = [];
 
+    const LW = 2;
+
     const steps = ['start', 'finish'];
-    const stepsDrs = ['detect', 'start', 'finish'];
     const stepsSectors = ['1', '2', '3'];
 
     const canvasDims = [WINDOW_SIZE, WINDOW_SIZE];
@@ -45,7 +51,7 @@ async function run() {
         ctx.lineWidth = data.fromMeters(data.pit.properties['rt:width']) * 2;
         ctx.strokeStyle = '#333';
         drawPolygon(ctx, data.pit.center);
-        ctx.lineWidth = 1;
+        ctx.lineWidth = LW;
     }
 
     // DRAW SECTORS
@@ -59,37 +65,22 @@ async function run() {
             ctx.strokeStyle = SECTOR_COLORS[sector];
             drawPolygon(ctx, way);
         }
-        ctx.lineWidth = 2;
+        ctx.lineWidth = LW;
     }
-
-    /* // DRAW TRACK (main, closed track)
-    {
-        ctx.strokeStyle = data.track.stroke;
-        ctx.setLineDash(DASHED);
-        drawPolygon(ctx, data.track.center, { close: true });
-        ctx.setLineDash(SOLID);
-        drawPolygon(ctx, data.track.left, { close: true });
-        drawPolygon(ctx, data.track.right, { close: true });
-    }
-
-    // DRAW PIT (auxiliary, open track)
-    {
-        ctx.strokeStyle = data.pit.stroke;
-        ctx.setLineDash(DASHED);
-        drawPolygon(ctx, data.pit.center);
-        ctx.setLineDash(SOLID);
-        drawPolygon(ctx, data.pit.left);
-        drawPolygon(ctx, data.pit.right);
-    } */
 
     // STARTING TRACK POS AND DIR, pitStop and startingGrid
     {
-        const p0 = data.track.center[data.startFinishIndex];
-        const p1 = data.track.center[data.startFinishIndex + 1];
-        const v0 = subV(p1, p0);
-        const angleAtP0 = toPolar(v0)[0];
-        ctx.strokeStyle = '#00F';
-        drawArrow(ctx, p0, angleAtP0);
+        {
+            const p0 = data.track.center[data.startFinishIndex];
+            const p1 = data.track.center[data.startFinishIndex + 1];
+            const v0 = subV(p1, p0);
+            const angleAtP0 = toPolar(v0)[0];
+            const t = turtle(p0, angleAtP0);
+            const p0_ = t.right(-13).p;
+            ctx.strokeStyle = '#00A';
+            drawArrow(ctx, p0_, angleAtP0);
+        }
+
 
         ctx.textAlign = 'left';
 
@@ -119,7 +110,7 @@ async function run() {
             ctx.strokeStyle = '#707';
             ctx.fillStyle = '#707';
             for (let step of stepsSectors) {
-                const p = data.sector[step][0];
+                const p = data.sector[step] && data.sector[step][0];
                 if (!p) { break; }
                 drawCircle(ctx, p, 5);
                 drawText(ctx, p, ` ---- sector ${step}`);
@@ -129,12 +120,20 @@ async function run() {
         {
             ctx.strokeStyle = DRS_COLOR;
             ctx.fillStyle = DRS_COLOR;
-            for (let step of stepsDrs) {
-                const points = data.drs[step];
-                if (!points) { break; }
-                for (let p of points) {
+            const lw = data.fromMeters(data.track.properties['rt:width']);
+            const detectPoints = data.drs.detect;
+            if (detectPoints) {
+                for (let [i, p] of Object.entries(detectPoints)) {
                     drawCircle(ctx, p, 5);
-                    drawText(ctx, p, ` ---- drs ${step}`);
+                    drawText(ctx, p, ` ---- drs detect`);
+                    const way = data.drs.way[i];
+                    const way2 = parametric(way, -Math.PI / 2, lw * 3);
+
+                    ctx.lineWidth = lw * 0.7;
+                    ctx.setLineDash(DASHED);
+                    drawPolygon(ctx, way2);
+                    ctx.setLineDash(SOLID);
+                    ctx.lineWidth = LW;
                 }
             }
         }

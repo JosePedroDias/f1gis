@@ -30,7 +30,23 @@ const RT_VALUE_DETECT = 'detect';
 const trueish = ['true', 'yes'];
 const falsy = ['false', 'no'];
 
-//function rotate()
+function makeArrayIterator(length, nextIndex = 0) {
+    const it = {
+        next: () => {
+            let result = { value: nextIndex, done: false }
+            nextIndex = (nextIndex + 1) % length;
+            return result;
+        }
+    };
+    return it;
+}
+
+function rotate(arr, delta) {
+    const l = arr.length;
+    const before = arr.slice(0, delta);
+    const from = arr.slice(delta);
+    return [...from, ...before];
+}
 
 function parseProperty(s) {
     if (isFinite(s)) {
@@ -174,7 +190,7 @@ export async function parseTrack(url, { zoom } = {}) {
                     bag = output.drs;
                     k = RT_POINT_TAG_DRS;
                     isArray = true;
-                } else if (propName === RT_POINT_TAG_RACEWAY && props[RT_POINT_TAG_RACEWAY] === RT_VALUE_START_FINISH) {
+                } else if (propName === RT_POINT_TAG_RACEWAY && [RT_VALUE_START_FINISH, RT_VALUE_FINISH].includes(props[RT_POINT_TAG_RACEWAY])) {
                     output._racewayStartFinish = coord;
                 }
                 else {
@@ -210,28 +226,64 @@ export async function parseTrack(url, { zoom } = {}) {
     }
 
     // trim sector ways
-    const sectors = [];
-    const numSectors = Object.keys(output.sector).length;
-    for (let [sector, p] of Object.entries(output.sector)) {
-        const i = findIndex(output.track.center, p);
-        const s2 = 1 + Number(sector) % numSectors;
-        const sector2 = `${s2}`;
-        const p2 = output.sector[sector2];
-        const f = findIndex(output.track.center, p2);
-        sectors.push(trimWay(output.track.center, i, f));
+    {
+        const sectors = [];
+        const numSectors = Object.keys(output.sector).length;
+        if (numSectors === 0) {
+            console.warn('no sectors found!');
+        } else {
+            for (let [sector, p] of Object.entries(output.sector)) {
+                const i = findIndex(output.track.center, p);
+                const s2 = 1 + Number(sector) % numSectors;
+                const sector2 = `${s2}`;
+                const p2 = output.sector[sector2];
+                const f = findIndex(output.track.center, p2);
+                sectors.push(trimWay(output.track.center, i, f));
+            }
+            output.sector = sectors.reduce((prev, curr) => {
+                const key = `${(1 + Object.keys(prev).length)}`;
+                prev[key] = curr;
+                return prev;
+            }, {});
+        }
     }
-    output.sector = sectors.reduce((prev, curr) => {
-        const key = `${(1 + Object.keys(prev).length)}`;
-        prev[key] = curr;
-        return prev;
-    }, {});
 
-    // TODO sort drs points
-    const referenceArray = output.track.center;
-    for (let [k, arr] of Object.entries(output.drs)) {
-        //console.log(k, arr);
-        const indices = arr.map((p) => findIndex(referenceArray, p));
-        //console.log(indices);
+
+    // sort drs points and trim ways
+    {
+        if (!output.drs.detect || !output.drs.start || !output.drs.finish) {
+            console.warn('no drs data found!');
+            output.drs = {
+                detect: [],
+                way: []
+            }
+        }
+        else {
+            const fn = (p) => findIndex(output.track.center, p);
+
+            let detects = output.drs.detect.map(fn);
+            let starts = output.drs.start.map(fn);
+            let finishes = output.drs.finish.map(fn);
+
+            detects.sort();
+            starts.sort();
+            finishes.sort();
+
+            const ways = [];
+            for (let detect of detects) {
+                while (starts[0] < detect && starts.length > 1) {
+                    starts = rotate(starts, 1);
+                }
+                while (finishes[0] < starts[0] && finishes.length > 1) {
+                    finishes = rotate(finishes, 1);
+                }
+                ways.push(trimWay(output.track.center, starts[0], finishes[0]));
+            }
+            output.drs = {
+                detect: detects.map((idx) => [...output.track.center[idx]]),
+                way: ways
+            }
+        }
     }
 
     // TODO assign widths by merging the default and node overrides
