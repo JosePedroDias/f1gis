@@ -74,19 +74,59 @@ async function run() {
         ctx.strokeStyle = '#00F';
         drawArrow(ctx, p0, angleAtP0);
 
-        if (data.startingGrid) {
+        const steps = ['start', 'finish'];
+        const stepsDrs = ['detect', 'start', 'finish'];
+        const stepsZones = ['1', '2', '3'];
+
+        ctx.textAlign = 'left';
+
+        {
             ctx.strokeStyle = '#077';
-            for (let p of data.startingGrid) {
+            ctx.fillStyle = '#077';
+            for (let step of steps) {
+                const p = data.startingGrid[step];
+                if (!p) { break; }
                 drawCircle(ctx, p, 5);
+                drawText(ctx, p, `starting-grid ${step}`);
             }
         }
 
-        if (data.pitStop) {
+        {
             ctx.strokeStyle = '#770';
-            for (let p of data.pitStop) {
+            ctx.fillStyle = '#770';
+            for (let step of steps) {
+                const p = data.pitStop[step];
+                if (!p) { break; }
                 drawCircle(ctx, p, 5);
+                drawText(ctx, p, `pit-stop ${step}`);
             }
         }
+
+        {
+            ctx.strokeStyle = '#707';
+            ctx.fillStyle = '#707';
+            for (let step of stepsZones) {
+                const p = data.zone[step];
+                if (!p) { break; }
+                drawCircle(ctx, p, 5);
+                drawText(ctx, p, `zone ${step}`);
+            }
+        }
+
+        {
+            ctx.strokeStyle = '#333';
+            ctx.fillStyle = '#333';
+            for (let step of stepsDrs) {
+                const points = data.drs[step];
+                if (!points) { break; }
+                for (let p of points) {
+                    drawCircle(ctx, p, 5);
+                    drawText(ctx, p, `drs ${step}`);
+                }
+            }
+        }
+
+        ctx.textAlign = 'center';
     }
 }
 
