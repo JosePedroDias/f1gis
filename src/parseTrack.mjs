@@ -16,10 +16,11 @@ const RT_WIDTH = 'rt:width';
 const RT_KIND_TRACK = 'track';
 const RT_KIND_PIT = 'pit';
 
+const RT_POINT_TAG_RACEWAY = 'raceway';
 const RT_POINT_TAG_PIT_STOP = 'rt:pit-stop';
 const RT_POINT_TAG_STARTING_GRID = 'rt:starting-grid';
 const RT_POINT_TAG_DRS = 'rt:drs';
-const RT_POINT_TAG_ZONE = 'rt:zone';
+const RT_POINT_TAG_SECTOR = 'rt:sector';
 
 const RT_VALUE_START = 'start';
 const RT_VALUE_FINISH = 'finish';
@@ -28,6 +29,8 @@ const RT_VALUE_DETECT = 'detect';
 
 const trueish = ['true', 'yes'];
 const falsy = ['false', 'no'];
+
+//function rotate()
 
 function parseProperty(s) {
     if (isFinite(s)) {
@@ -53,12 +56,36 @@ function parseProperties(props) {
     return o;
 }
 
+function findIndex(arr, point) {
+    let nearestIndex;
+    let nearestDistSq = Number.MAX_SAFE_INTEGER;
+    for (let [i, p] of Object.entries(arr)) {
+        const distSq = distanceSquared2(p, point);
+        if (distSq < nearestDistSq) {
+            nearestDistSq = distSq;
+            nearestIndex = Number(i);
+            if (nearestDistSq === 0) {
+                return nearestIndex;
+            }
+        }
+    }
+
+    return nearestIndex;
+}
+
+function trimWay(arr, i, f) {
+    const res = [];
+    const l = arr.length;
+    while (true) {
+        res.push(arr[i]);
+        if (i === f) { return res; }
+        i = (i + 1) % l;
+    }
+}
+
 export async function parseTrack(url, { zoom } = {}) {
     const res = await fetch(url);
     const data = await res.json();
-
-    //console.log('data0', data);
-
     const pr = projectFactory(zoom);
 
     // we ought to visit the track first to find its boundaries and center the canvas there...
@@ -75,10 +102,11 @@ export async function parseTrack(url, { zoom } = {}) {
         pit: {}, // poly arrays (left, center and right)
         pitStop: {}, // positions (start, finish)
         startingGrid: {}, // positions (start, finish)
-        zone: {}, // positions (1, 2, 3)
+        sector: {}, // positions (1, 2, 3)
         drs: {}, // positions (start, finish, detect (arrays))
         dimensions: [], // [w, h]
-        center: [] // [x, y]
+        center: [], // [x, y]
+        startFinishIndex: 0
     }
 
     let ox, oy;
@@ -101,23 +129,6 @@ export async function parseTrack(url, { zoom } = {}) {
 
     function handlePoint(p) {
         return offset(pr(p));
-    }
-
-    function findIndex(arr, point) {
-        let nearestIndex;
-        let nearestDistSq = Number.MAX_SAFE_INTEGER;
-        for (let [i, p] of Object.entries(arr)) {
-            const distSq = distanceSquared2(p, point);
-            if (distSq < nearestDistSq) {
-                nearestDistSq = distSq;
-                nearestIndex = Number(i);
-                if (nearestDistSq === 0) {
-                    return nearestIndex;
-                }
-            }
-        }
-
-        return nearestIndex;
     }
 
     data.features.forEach(feature => {
@@ -156,21 +167,24 @@ export async function parseTrack(url, { zoom } = {}) {
                 } else if (propName === RT_POINT_TAG_STARTING_GRID) {
                     bag = output.startingGrid;
                     k = RT_POINT_TAG_STARTING_GRID;
-                } else if (propName === RT_POINT_TAG_ZONE) {
-                    bag = output.zone;
-                    k = RT_POINT_TAG_ZONE;
+                } else if (propName === RT_POINT_TAG_SECTOR) {
+                    bag = output.sector;
+                    k = RT_POINT_TAG_SECTOR;
                 } else if (propName === RT_POINT_TAG_DRS) {
                     bag = output.drs;
                     k = RT_POINT_TAG_DRS;
                     isArray = true;
-                } else {
+                } else if (propName === RT_POINT_TAG_RACEWAY && props[RT_POINT_TAG_RACEWAY] === RT_VALUE_START_FINISH) {
+                    output._racewayStartFinish = coord;
+                }
+                else {
                     console.warn(`Prop ${propName} ignored.`);
                 }
                 if (bag) {
                     const v = props[k];
                     if (isArray) {
                         if (bag[v]) {
-                            bag[v].append(coord);
+                            bag[v].push(coord);
                         } else {
                             bag[v] = [coord];
                         }
@@ -186,12 +200,38 @@ export async function parseTrack(url, { zoom } = {}) {
         }
     });
 
+    // startFinishIndex
+    if (output._racewayStartFinish) {
+        const i = findIndex(output.track.center, output._racewayStartFinish);
+        output.startFinishIndex = i;
+        delete output._racewayStartFinish;
+    } else {
+        console.warn(`${RT_POINT_TAG_RACEWAY} property with value ${RT_VALUE_START_FINISH} missing from a point in the ${GJ_GEO_TYPE_LS} ${RT_KIND_TRACK}! Assuming index 0.`);
+    }
+
+    // trim sector ways
+    const sectors = [];
+    const numSectors = Object.keys(output.sector).length;
+    for (let [sector, p] of Object.entries(output.sector)) {
+        const i = findIndex(output.track.center, p);
+        const s2 = 1 + Number(sector) % numSectors;
+        const sector2 = `${s2}`;
+        const p2 = output.sector[sector2];
+        const f = findIndex(output.track.center, p2);
+        sectors.push(trimWay(output.track.center, i, f));
+    }
+    output.sector = sectors.reduce((prev, curr) => {
+        const key = `${(1 + Object.keys(prev).length)}`;
+        prev[key] = curr;
+        return prev;
+    }, {});
+
     // TODO sort drs points
     const referenceArray = output.track.center;
     for (let [k, arr] of Object.entries(output.drs)) {
-        console.log(k, arr);
+        //console.log(k, arr);
         const indices = arr.map((p) => findIndex(referenceArray, p));
-        console.log(indices);
+        //console.log(indices);
     }
 
     // TODO assign widths by merging the default and node overrides

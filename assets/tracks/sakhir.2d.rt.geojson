@@ -1,3 +1,4 @@
+
 {
     "type": "FeatureCollection",
     "generator": "JOSM",
@@ -5,37 +6,41 @@
         {
             "type": "Feature",
             "properties": {
-                "oneway": "yes",
-                "rt:width": "14",
-                "rt:kind": "pit"
+                "rt:drs": "start"
             },
             "geometry": {
-                "type": "LineString",
+                "type": "Point",
                 "coordinates": [
-                    [
-                        50.51031140000,
-                        26.02832380000
-                    ],
-                    [
-                        50.51046540000,
-                        26.02916050000
-                    ],
-                    [
-                        50.51054980000,
-                        26.02984580000
-                    ],
-                    [
-                        50.51072080000,
-                        26.03397090000
-                    ],
-                    [
-                        50.51070930000,
-                        26.03468970000
-                    ],
-                    [
-                        50.51063870000,
-                        26.03547310000
-                    ]
+                    50.51265737911,
+                    26.03472226171
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:drs": "detect"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51353900000,
+                    26.03443360000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "raceway": "start-finish",
+                "rt:sector": "1",
+                "rt:starting-grid": "start"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51038070000,
+                    26.03022750000
                 ]
             }
         },
@@ -148,6 +153,10 @@
                     [
                         50.51272730000,
                         26.03523390000
+                    ],
+                    [
+                        50.51265737911,
+                        26.03472226171
                     ],
                     [
                         50.51254250000,
@@ -266,6 +275,10 @@
                         26.03071720000
                     ],
                     [
+                        50.51641289510,
+                        26.03055526915
+                    ],
+                    [
                         50.51710740000,
                         26.03023420000
                     ],
@@ -346,6 +359,10 @@
                         26.02677950000
                     ],
                     [
+                        50.51029595617,
+                        26.02771753920
+                    ],
+                    [
                         50.51031140000,
                         26.02832380000
                     ],
@@ -364,6 +381,10 @@
                     [
                         50.51063870000,
                         26.03547310000
+                    ],
+                    [
+                        50.51068004304,
+                        26.03648615875
                     ],
                     [
                         50.51068730000,
@@ -469,6 +490,199 @@
                         50.51616680000,
                         26.03314530000
                     ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:pit-stop": "finish"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51072080000,
+                    26.03397090000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:sector": "2"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51724250000,
+                    26.03445810000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:drs": "detect"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51096700000,
+                    26.02616550000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:drs": "start"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51286410000,
+                    26.03661530000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:starting-grid": "finish"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51054040000,
+                    26.03395050000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "oneway": "yes",
+                "rt:kind": "pit",
+                "rt:width": "14"
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        50.51031140000,
+                        26.02832380000
+                    ],
+                    [
+                        50.51046540000,
+                        26.02916050000
+                    ],
+                    [
+                        50.51054980000,
+                        26.02984580000
+                    ],
+                    [
+                        50.51072080000,
+                        26.03397090000
+                    ],
+                    [
+                        50.51070930000,
+                        26.03468970000
+                    ],
+                    [
+                        50.51063870000,
+                        26.03547310000
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:sector": "3"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51641289510,
+                    26.03055526915
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:drs": "finish"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51820440000,
+                    26.03569890000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:pit-stop": "start"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51054980000,
+                    26.02984580000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:drs": "start"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51029595617,
+                    26.02771753920
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:drs": "finish"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51068730000,
+                    26.03678180000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:drs": "detect"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51068004304,
+                    26.03648615875
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:drs": "finish"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    50.51232830000,
+                    26.02911750000
                 ]
             }
         }

@@ -128,7 +128,7 @@ async function run() {
     }
 
     // positions
-    // TODO zones, drs, colors
+    // TODO sectors, drs, colors
     parts = [
         data.pitStop,
         data.startingGrid

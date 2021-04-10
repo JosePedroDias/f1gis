@@ -99,7 +99,7 @@
         {
             "type": "Feature",
             "properties": {
-                "rt:zone": "3"
+                "rt:sector": "3"
             },
             "geometry": {
                 "type": "Point",
@@ -580,7 +580,7 @@
         {
             "type": "Feature",
             "properties": {
-                "rt:zone": "1",
+                "rt:sector": "1",
                 "rt:starting-grid": "start"
             },
             "geometry": {
@@ -594,7 +594,7 @@
         {
             "type": "Feature",
             "properties": {
-                "rt:zone": "2"
+                "rt:sector": "2"
             },
             "geometry": {
                 "type": "Point",
