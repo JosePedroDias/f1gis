@@ -128,12 +128,14 @@ async function run() {
     }
 
     // positions
+    // TODO zones, drs, colors
     parts = [
         data.pitStop,
         data.startingGrid
     ];
-    for (let points of parts) {
-        for (let p_ of points) {
+    for (let bag of parts) {
+        for (let p_ of [bag.start, bag.finish]) {
+            if (!p_) { break; }
             const p = convertPoint(p_)
             const geometry = new THREE.SphereGeometry(0.02, 16, 16);
             const mesh = new THREE.Mesh(geometry, lambertMat);
@@ -144,8 +146,6 @@ async function run() {
             // TODO add directions to startingGrid?
         }
     }
-
-    // TODO checkpoints
 
     scene.add(trackGroup);
 
