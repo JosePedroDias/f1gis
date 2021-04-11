@@ -15,7 +15,10 @@ Will also try to create a simple Javascript racing game using the parsed track i
     -  2D
         - [x] track and pit
         - [x] starting-grid and pit-stop
-        - [ ] checkpoints
+        - [x] dts
+        - [x] sections
+        - [x] raceway=start-finish
+        - [ ] multiple widths
         - [ ] alignment-from-track
         - [ ] model and model-batch
         - [ ] track decorations
@@ -23,6 +26,7 @@ Will also try to create a simple Javascript racing game using the parsed track i
         - [ ] buildings
     - 3D
         - [ ] same support as 2D
+        - [ ] height
         - [ ] camber
         - [ ] cross-sections + track decorations
 - documentation

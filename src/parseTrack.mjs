@@ -3,7 +3,7 @@
 https://www.openstreetmap.org/#map=16/37.2303/-8.6279
 */
 import { projectFactory } from './gis.mjs';
-import { limits2, parametric, distanceSquared2 } from './math.mjs';
+import { limits2, parametric, distanceSquared2, distance, pairs } from './math.mjs';
 
 const ZOOM_TO_METERS = 0.000003; // has not been calculated, estimated by trial and error
 
@@ -29,17 +29,6 @@ const RT_VALUE_DETECT = 'detect';
 
 const trueish = ['true', 'yes'];
 const falsy = ['false', 'no'];
-
-function makeArrayIterator(length, nextIndex = 0) {
-    const it = {
-        next: () => {
-            let result = { value: nextIndex, done: false }
-            nextIndex = (nextIndex + 1) % length;
-            return result;
-        }
-    };
-    return it;
-}
 
 function rotate(arr, delta) {
     const l = arr.length;
@@ -111,6 +100,10 @@ export async function parseTrack(url, { zoom } = {}) {
     const api = {
         fromMeters(dim) {
             return dim * Math.pow(2, zoom) * ZOOM_TO_METERS;
+        },
+        toMeters(d) {
+            // does not work well yet?
+            return d * 0.037 * Math.pow(2, 18 - zoom);
         }
     }
     const output = {
@@ -287,6 +280,10 @@ export async function parseTrack(url, { zoom } = {}) {
             }
         }
     }
+
+    /* const dist = pairs(output.track.center).reduce((total, [a, b]) => {
+        return total + api.toMeters(distance(a, b));
+    }, 0); */
 
     // TODO assign widths by merging the default and node overrides
 

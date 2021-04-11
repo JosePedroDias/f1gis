@@ -233,3 +233,25 @@ export function turtle(startP = [0, 0], startAngle = 0) {
 
     return api;
 }
+
+export function pairs(arr) {    // assumes osm loop, therefore skipping connecting end
+    const l = arr.length;
+    const res = [];
+
+    for (let i = 0; i < l - 1; ++i) {
+        res.push([arr[i], arr[i + 1]]);
+    }
+
+    return res;
+}
+
+function makeArrayIterator(length, nextIndex = 0) {
+    const it = {
+        next: () => {
+            let result = { value: nextIndex, done: false }
+            nextIndex = (nextIndex + 1) % length;
+            return result;
+        }
+    };
+    return it;
+}
