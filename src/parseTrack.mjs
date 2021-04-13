@@ -3,7 +3,7 @@
 https://www.openstreetmap.org/#map=16/37.2303/-8.6279
 */
 import { projectFactory } from './gis.mjs';
-import { limits2, parametric, distanceSquared2, distance, pairs } from './math.mjs';
+import { limits2, parametric, distanceSquared2, zip } from './math.mjs';
 
 const ZOOM_TO_METERS = 0.000003; // has not been calculated, estimated by trial and error
 
@@ -12,6 +12,8 @@ const GJ_GEO_TYPE_P = 'Point';
 
 const RT_KIND = 'rt:kind';
 const RT_WIDTH = 'rt:width';
+const RT_HEIGHT = 'rt:height';
+const RT_CAMBER = 'rt:camber';
 
 const RT_KIND_TRACK = 'track';
 const RT_KIND_PIT = 'pit';
@@ -61,7 +63,7 @@ function parseProperties(props) {
     return o;
 }
 
-function findIndex(arr, point) {
+function findNearestIndex(arr, point) {
     let nearestIndex;
     let nearestDistSq = Number.MAX_SAFE_INTEGER;
     for (let [i, p] of Object.entries(arr)) {
@@ -75,7 +77,18 @@ function findIndex(arr, point) {
         }
     }
 
+    console.log('nearest');
     return nearestIndex;
+}
+
+function findIndex(arr, [x1, y1]) {
+    for (let [i, [x2, y2]] of Object.entries(arr)) {
+        if (x1 === x2 && y1 === y2) {
+            return i;
+        }
+    }
+
+    throw new Error('point not found');
 }
 
 function trimWay(arr, i, f) {
@@ -100,11 +113,10 @@ export async function parseTrack(url, { zoom } = {}) {
     const api = {
         fromMeters(dim) {
             return dim * Math.pow(2, zoom) * ZOOM_TO_METERS;
-        },
+        }/* ,
         toMeters(d) {
-            // does not work well yet?
             return d * 0.037 * Math.pow(2, 18 - zoom);
-        }
+        } */
     }
     const output = {
         track: {}, // poly arrays (left, center and right)
@@ -140,6 +152,8 @@ export async function parseTrack(url, { zoom } = {}) {
         return offset(pr(p));
     }
 
+    let pointsToHandle = [];
+
     data.features.forEach(feature => {
         const geo = feature.geometry;
         const props = parseProperties(feature.properties);
@@ -151,21 +165,17 @@ export async function parseTrack(url, { zoom } = {}) {
 
             if ([RT_KIND_TRACK, RT_KIND_PIT].includes(kind)) {
                 let bag = kind === RT_KIND_TRACK ? output.track : output.pit;
-
-                // TODO left and right should be computed after all geojson is parsed, so points can override widths, etc.
-                let width = api.fromMeters(props[RT_WIDTH]);
-                const closed = kind === RT_KIND_TRACK;
-
                 bag.properties = props;
-                bag.left = parametric(coords, -Math.PI / 2, width, closed)
                 bag.center = coords;
-                bag.right = parametric(coords, Math.PI / 2, width, closed);
             } else {
                 console.warn(`rt-kind ${kind} ignored.`);
                 console.log(feature);
             }
         } else if (geo.type === GJ_GEO_TYPE_P) {
             const coord = handlePoint(geo.coordinates);
+
+            pointsToHandle.push([coord, props]);
+
             let bag, k;
 
             for (let propName of Object.keys(props)) {
@@ -187,6 +197,8 @@ export async function parseTrack(url, { zoom } = {}) {
                     if ([RT_VALUE_START_FINISH, RT_VALUE_FINISH].includes(props[RT_POINT_TAG_RACEWAY])) {
                         output._racewayStartFinish = coord;
                     }
+                } else if ([RT_WIDTH, RT_HEIGHT, RT_CAMBER].includes(propName)) {
+                    // noop
                 }
                 else {
                     console.warn(`Prop ${propName} ignored.`);
@@ -211,9 +223,48 @@ export async function parseTrack(url, { zoom } = {}) {
         }
     });
 
+    // handle point attributions to track and pit
+    {
+        const tracks = [[output.track, true], [output.pit, false]];
+
+        let _pointsToHandle;
+
+        for (let [track, isClosed] of tracks) {
+            const l = track.center.length;
+            const slots = new Array(l);
+            _pointsToHandle = [];
+
+            pointsToHandle.forEach(([coord, props]) => {
+                let idx;
+                try {
+                    idx = findIndex(track.center, coord);
+                } catch (_) {
+                    _pointsToHandle.push([coord, props]);
+                    return;
+                }
+
+                slots[idx] = props;
+                if (isClosed) {
+                    if (idx === 0) {
+                        slots[l - 1] = props;
+                    } else if (idx === l - 1) {
+                        slots[0] = props;
+                    }
+                }
+            });
+
+            pointsToHandle = _pointsToHandle;
+            track.pointProperties = slots;
+        }
+
+        if (pointsToHandle.length > 0) {
+            console.log('pointsToHandle', pointsToHandle);
+        }
+    }
+
     // startFinishIndex
     if (output._racewayStartFinish) {
-        const i = findIndex(output.track.center, output._racewayStartFinish);
+        const i = findNearestIndex(output.track.center, output._racewayStartFinish);
         output.startFinishIndex = i;
         delete output._racewayStartFinish;
     } else {
@@ -226,13 +277,14 @@ export async function parseTrack(url, { zoom } = {}) {
         const numSectors = Object.keys(output.sector).length;
         if (numSectors === 0) {
             console.warn('no sectors found!');
+            output.sector['1'] = output.track.center;
         } else {
             for (let [sector, p] of Object.entries(output.sector)) {
-                const i = findIndex(output.track.center, p);
+                const i = findNearestIndex(output.track.center, p);
                 const s2 = 1 + Number(sector) % numSectors;
                 const sector2 = `${s2}`;
                 const p2 = output.sector[sector2];
-                const f = findIndex(output.track.center, p2);
+                const f = findNearestIndex(output.track.center, p2);
                 sectors.push(trimWay(output.track.center, i, f));
             }
             output.sector = sectors.reduce((prev, curr) => {
@@ -242,7 +294,6 @@ export async function parseTrack(url, { zoom } = {}) {
             }, {});
         }
     }
-
 
     // sort drs points and trim ways
     {
@@ -254,7 +305,7 @@ export async function parseTrack(url, { zoom } = {}) {
             }
         }
         else {
-            const fn = (p) => findIndex(output.track.center, p);
+            const fn = (p) => findNearestIndex(output.track.center, p);
 
             let detects = output.drs.detect.map(fn);
             let starts = output.drs.start.map(fn);
@@ -281,11 +332,44 @@ export async function parseTrack(url, { zoom } = {}) {
         }
     }
 
-    /* const dist = pairs(output.track.center).reduce((total, [a, b]) => {
-        return total + api.toMeters(distance(a, b));
-    }, 0); */
+    // assign widths and heights... generate left and right ways
+    // TODO: cambers
+    {
+        const tracks = [[output.track, true], [output.pit, false]];
+        for (let [track, isClosed] of tracks) {
+            const l = track.center.length;
+            const widths = new Array(l);
+            const heights = new Array(l);
+            const cambers = new Array(l);
+            widths.fill(api.fromMeters(track.properties[RT_WIDTH]));
+            heights.fill(api.fromMeters(track.properties[RT_HEIGHT] || 0));
+            cambers.fill(api.fromMeters(track.properties[RT_CAMBER] || 0));
 
-    // TODO assign widths by merging the default and node overrides
+            for (let [idx, props] of Object.entries(track.pointProperties)) {
+                if (props[RT_WIDTH]) {
+                    widths[idx] = api.fromMeters(props[RT_WIDTH]);
+                }
+                if (props[RT_HEIGHT]) {
+                    heights[idx] = api.fromMeters(props[RT_HEIGHT]);
+                }
+                if (props[RT_CAMBER]) {
+                    cambers[idx] = api.fromMeters(props[RT_CAMBER]);
+                }
+            }
+
+            //console.log('widths', widths);
+            //console.log('heights', heights);
+            //console.log('cambers', cambers);
+
+            track.left = parametric(track.center, -Math.PI / 2, widths, closed)
+            track.right = parametric(track.center, Math.PI / 2, widths, closed);
+
+            const addHeight = (p2, h) => [p2[0], h, p2[1]];
+            track.left = zip([track.left, heights], addHeight);
+            track.center = zip([track.center, heights], addHeight);
+            track.right = zip([track.right, heights], addHeight);
+        }
+    }
 
     return {
         ...output,

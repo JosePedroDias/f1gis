@@ -255,3 +255,13 @@ function makeArrayIterator(length, nextIndex = 0) {
     };
     return it;
 }
+
+export function zip(arrays, mapFn) {
+    const l = arrays[0].length;
+    const res = new Array(l);
+    for (let i = 0; i < l; ++i) {
+        const args = arrays.map((arr) => arr[i]);
+        res[i] = mapFn(...args);
+    }
+    return res;
+}

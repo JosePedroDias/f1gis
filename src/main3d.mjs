@@ -20,8 +20,17 @@ import { parseTrack } from './parseTrack.mjs';
 const ZOOM = 16;
 const S = 1 / 40;
 
-function convertPoint([x, z]) {
-    return [x * S, 0, z * S];
+window.addEventListener('hashchange', () => location.reload());
+
+function convertPoint(p) {
+    if (p.length === 2) {
+        return [p[0] * S, 0, p[1] * S];
+    } else if (p.length === 3) {
+        return [p[0] * S, p[1] * S, p[2] * S];
+    } else {
+        throw new Error('Wrong number of coords!');
+    }
+
 }
 
 function throughSpline(points_, closed) {
@@ -66,7 +75,6 @@ function generateRailGeometry(leftRail, rightRail, closed) {
         const p1 = rails[1][wi];
         const crossSize = [ // TODO: injecting Y for now
             convertPoint(p0), convertPoint(p1)
-            //p0, p1
         ];
         for (let csi = 0; csi < crossSectionSize; ++csi) {
             const p = crossSize[csi];
@@ -108,7 +116,8 @@ async function run() {
 
     const mapName = location.hash?.substring(1) || 'portimao.2d.rt.geojson';
     const data = await parseTrack(`./assets/tracks/${mapName}`, { zoom: ZOOM });
-    //console.log('data', data);
+    console.log('data', data);
+    window.data = data;
 
     const trackGroup = new THREE.Group();
 

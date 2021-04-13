@@ -18,29 +18,28 @@ Will also try to create a simple Javascript racing game using the parsed track i
         - [x] dts
         - [x] sections
         - [x] raceway=start-finish
-        - [ ] multiple widths
+        - [x] multiple widths
         - [ ] alignment-from-track
         - [ ] model and model-batch
         - [ ] track decorations
         - [ ] terrain-material
         - [ ] buildings
     - 3D
-        - [ ] same support as 2D
-        - [ ] height
+        - [x] same support as 2D
+        - [x] height
         - [ ] camber
         - [ ] cross-sections + track decorations
 - documentation
     - [ ] briefly document the parser, if it gets to a usable shape
     - [ ] write a tutorial on how to create `rt.geojson` tracks from scratch
 - sample apps
-    - [x] debug drawing in canvas (WIP)
-    - [ ] 2D example
-      - [x] render 2D track from parsed data
-    - [ ] 3D example
-      - [x] render 3D track from parsed data
+    - [x] debug drawing in canvas
+    - [x] render 3D track from parsed data
 
 ## Bugs
 
+- start and end way orientations seem skewed
+- parsed data should be centered on 0,0, it isn't yet
 
 ## Tools
 
@@ -49,6 +48,4 @@ Will also try to create a simple Javascript racing game using the parsed track i
 
 ## Samples:
 
-- [debug 2D map](https://josepedrodias.github.io/f1gis/debug2d.html) - renders features already supported by the parser, with auxiliary info to help debug any issues
-- [sample 2D](https://josepedrodias.github.io/f1gis/sample2d.html) - WIP - will allow driving top-down with stupid simple car and camera
-- [sample 3D](https://josepedrodias.github.io/f1gis/sample3d.html) - SUPER WIP - will render 3D mesh of map based on parsed data
+Check the samples [here](https://josepedrodias.github.io/f1gis/index.html)

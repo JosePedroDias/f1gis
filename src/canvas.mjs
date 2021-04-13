@@ -43,6 +43,21 @@ export function drawPolygon(ctx, poly, { fill, close } = {}) {
     ctx[fill ? 'fill' : 'stroke']();
 }
 
+export function drawTrack(ctx, lway, rway, o = {}) {
+    //const a = 0;
+    //const b = Math.floor(lway.length / 2);
+    //const b = lway.length;
+    //const lw = lway.slice(a, b + 1);
+    //const rw = rway.slice(a, b + 1);
+    const lw = [...lway];
+    const wr = [...rway];
+    wr.reverse();
+    const way = [
+        ...lw, ...wr,
+    ];
+    drawPolygon(ctx, way, o);
+}
+
 export function drawText(ctx, [x, y], text) {
     ctx.fillText(text, x, y);
 }

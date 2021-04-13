@@ -1,5 +1,5 @@
 import { parseTrack } from './parseTrack.mjs';
-import { drawPolygon, drawArrow, drawCircle, drawText, } from './canvas.mjs';
+import { drawPolygon, drawTrack, drawArrow, drawCircle, drawText, } from './canvas.mjs';
 import { subV, mulVScalar, toPolar, parametric } from './math.mjs';
 import { turtle } from './math.mjs';
 
@@ -10,6 +10,8 @@ const SECTOR_COLORS = {
 }
 
 const DRS_COLOR = '#00c500';
+
+window.addEventListener('hashchange', () => location.reload());
 
 async function run() {
     const hash = (location.hash?.substring(1) || '').split(',');
@@ -31,7 +33,12 @@ async function run() {
 
 
     const data = await parseTrack(`./assets/tracks/${mapName}`, { zoom: ZOOM });
-    console.log('data', data);
+    //console.log('data', data);
+    const dropY = ([x, y, z]) => [x, z];
+    [data.track.left, data.track.center, data.track.right, data.pit.left, data.pit.center, data.pit.right].forEach(arr => {
+        arr.forEach((p3, i, arr) => arr[i] = dropY(p3));
+    });
+    console.log('data 2d', data);
     window.data = data;
 
     //const DASHED = [5, 15];
@@ -51,20 +58,18 @@ async function run() {
     ctx.translate(offset[0], offset[1]);
 
     // draw pit lane
-    {
-        ctx.lineWidth = data.fromMeters(data.pit.properties['rt:width']) * 2;
-        ctx.strokeStyle = '#333';
-        drawPolygon(ctx, data.pit.center);
-        ctx.lineWidth = LW;
-    }
+    ctx.strokeStyle = '#333';
+    drawTrack(ctx, data.pit.left, data.pit.right, { fill: true });
+
+    // draw track
+    ctx.fillStyle = '#000';
+    drawTrack(ctx, data.track.left, data.track.right, { fill: true });
+
 
     // DRAW SECTORS
     {
         const lw = data.fromMeters(data.track.properties['rt:width']) * 2;
         for (let [sector, way] of Object.entries(data.sector)) {
-            ctx.lineWidth = lw;
-            ctx.strokeStyle = '#000';
-            drawPolygon(ctx, way);
             ctx.lineWidth = lw / 4;
             ctx.strokeStyle = SECTOR_COLORS[sector];
             drawPolygon(ctx, way);
