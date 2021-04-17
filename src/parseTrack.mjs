@@ -166,49 +166,7 @@ export async function parseTrack(url, { zoom } = {}) {
             }
         } else if (geo.type === GJ_GEO_TYPE_P) {
             const coord = handlePoint(geo.coordinates);
-
             pointsToHandle.push([coord, props]);
-
-            let bag, k;
-
-            for (let propName of Object.keys(props)) {
-                let isArray = false;
-                if (propName === RT_POINT_TAG_PIT_STOP) {
-                    bag = output.pitStop;
-                    k = RT_POINT_TAG_PIT_STOP;
-                } else if (propName === RT_POINT_TAG_STARTING_GRID) {
-                    bag = output.startingGrid;
-                    k = RT_POINT_TAG_STARTING_GRID;
-                } else if (propName === RT_POINT_TAG_SECTOR) {
-                    bag = output.sector;
-                    k = RT_POINT_TAG_SECTOR;
-                } else if (propName === RT_POINT_TAG_DRS) {
-                    bag = output.drs;
-                    k = RT_POINT_TAG_DRS;
-                    isArray = true;
-                } else if (propName === RT_POINT_TAG_RACEWAY) {
-                    if ([RT_VALUE_START_FINISH, RT_VALUE_FINISH].includes(props[RT_POINT_TAG_RACEWAY])) {
-                        output._racewayStartFinish = coord;
-                    }
-                } else if ([RT_WIDTH, RT_HEIGHT, RT_CAMBER].includes(propName)) {
-                    // noop
-                }
-                else {
-                    console.warn(`Prop ${propName} ignored (${props[propName]}).`);
-                }
-                if (bag) {
-                    const v = props[k];
-                    if (isArray) {
-                        if (bag[v]) {
-                            bag[v].push(coord);
-                        } else {
-                            bag[v] = [coord];
-                        }
-                    } else {
-                        bag[v] = coord;
-                    }
-                }
-            }
         }
         else {
             console.warn(`Geometry type ${geo.type} ignored.`);
@@ -253,6 +211,35 @@ export async function parseTrack(url, { zoom } = {}) {
 
         if (pointsToHandle.length > 0) {
             console.log('pointsToHandle', pointsToHandle);
+        }
+
+        // promote sectors and drs...
+        for (let [i, coord] of Object.entries(output.track.center)) {
+            const props = output.track.pointProperties[i];
+            if (props[RT_POINT_TAG_SECTOR]) {
+                const v = props[RT_POINT_TAG_SECTOR];
+                output.sector[v] = coord;
+            }
+            if (props[RT_POINT_TAG_STARTING_GRID]) {
+                const v = props[RT_POINT_TAG_STARTING_GRID];
+                output.startingGrid[v] = coord;
+            }
+            if (props[RT_POINT_TAG_DRS]) {
+                const v = props[RT_POINT_TAG_DRS];
+                let bag = output.drs[v];
+                if (!bag) {
+                    bag = [];
+                    output.drs[v] = bag;
+                }
+                output.drs[v].push(coord);
+            }
+        }
+        for (let [i, coord] of Object.entries(output.pit.center)) {
+            const props = output.pit.pointProperties[i];
+            if (props[RT_POINT_TAG_PIT_STOP]) {
+                const v = props[RT_POINT_TAG_PIT_STOP];
+                output.pitStop[v] = coord;
+            }
         }
     }
 
@@ -317,8 +304,7 @@ export async function parseTrack(url, { zoom } = {}) {
         }
     }
 
-    // assign widths and heights... generate left and right ways
-    // TODO: cambers
+    // assign widths and heights... generate left and right ways TODO: cambers
     {
         const tracks = [[output.track, true], [output.pit, false]];
         for (let [track, isClosed] of tracks) {
@@ -351,10 +337,6 @@ export async function parseTrack(url, { zoom } = {}) {
                 heights[idx] = api.fromMeters(height);
                 cambers[idx] = api.fromMeters(camber);
             }
-
-            //console.log('widths', widths);
-            //console.log('heights', heights);
-            //console.log('cambers', cambers);
 
             track.left = parametric(track.center, -Math.PI / 2, widths, closed)
             track.right = parametric(track.center, Math.PI / 2, widths, closed);
