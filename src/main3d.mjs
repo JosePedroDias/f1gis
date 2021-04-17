@@ -148,7 +148,7 @@ function generateRailGeometry(leftRail, rightRail, closed, scene) {
 function generateLineGeometry(centerRail, pointProperties, closed, scene) {
     const points = [];
     centerRail.forEach((p) => {
-        const [x, y, z] = convertPoint(p);
+        const [x, _, z] = convertPoint(p);
         points.push(new THREE.Vector3(x, 0, z));
     });
 
@@ -156,9 +156,22 @@ function generateLineGeometry(centerRail, pointProperties, closed, scene) {
 
     points.forEach((p, i) => {
         const props = pointProperties[i];
-        const hasLabel = props[RT_POINT_TAG_CURVE] || props[RT_HEIGHT]; // RT_HEIGHT RT_POINT_TAG_CURVE RT_POINT_TAG_LABEL
+        const hasLabel = props[RT_POINT_TAG_CURVE] /* || props[RT_POINT_TAG_LABEL] */ || props[RT_HEIGHT];
         if (!hasLabel) { return; }
-        const label = `c${props[RT_POINT_TAG_CURVE] || `#${i}`} ${props[RT_HEIGHT] ? `${props[RT_HEIGHT]}m` : '--'}`;
+
+        const k = props[RT_POINT_TAG_CURVE] ? `C${props[RT_POINT_TAG_CURVE]}` : `#${i}`;
+
+        /*let k = `#${i}`;
+        if (props[RT_POINT_TAG_CURVE] && props[RT_POINT_TAG_LABEL]) {
+            k = `${props[RT_POINT_TAG_LABEL]} (C${props[RT_POINT_TAG_CURVE]})`;
+        } else if (props[RT_POINT_TAG_CURVE]) {
+            k = `C${props[RT_POINT_TAG_CURVE]}`;
+        } else {
+            k = props[RT_POINT_TAG_LABEL];
+        } */
+
+        const v = props[RT_HEIGHT] !== undefined ? `${props[RT_HEIGHT]}m` : '';
+        const label = `${k} ${v}`;
 
         const group = new THREE.Group();
         group.position.set(p.x, p.y, p.z);
@@ -234,7 +247,7 @@ async function run() {
             mesh.position.set(...p);
             trackGroup.add(mesh);
 
-            // TODO add directions to startingGrid?
+            // TODO add directions
         }
     }
 
@@ -254,8 +267,9 @@ async function run() {
     const obj = oe.parse(mesh);
     console.log(obj); */
 
-    camera.position.y = 3;
-    camera.position.z = 5;
+    camera.position.y = 10;
+    camera.position.z = 15;
+    //camera.position.y = 15;
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.update();
@@ -265,7 +279,6 @@ async function run() {
     function animate(tMs) {
         let second = Math.floor(tMs / 100);
         requestAnimationFrame(animate);
-        //trackGroup.rotation.x += 0.005;
         //trackGroup.rotation.y += 0.01;
         controls.update();
 
