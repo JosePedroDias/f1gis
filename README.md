@@ -24,11 +24,14 @@ Will also try to create a simple Javascript racing game using the parsed track i
         - [ ] track decorations
         - [ ] terrain-material
         - [ ] buildings
+        - [ ] identify best curve side to place labels/annotations
     - 3D
         - [x] same support as 2D
         - [x] height
         - [ ] camber
         - [ ] cross-sections + track decorations
+        - [ ] follow track cam
+        - [ ] uv mapping
 - documentation
     - [ ] briefly document the parser, if it gets to a usable shape
     - [ ] write a tutorial on how to create `rt.geojson` tracks from scratch

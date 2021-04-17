@@ -6,163 +6,55 @@
         {
             "type": "Feature",
             "properties": {
-                "oneway": "yes",
-                "rt:kind": "pit",
-                "rt:width": "14"
+                "raceway": "finish",
+                "rt:sector": "1",
+                "rt:starting-grid": "start"
             },
             "geometry": {
-                "type": "LineString",
+                "type": "Point",
                 "coordinates": [
-                    [
-                        11.72350371271,
-                        44.34485617280
-                    ],
-                    [
-                        11.72282510000,
-                        44.34467260000
-                    ],
-                    [
-                        11.72167890000,
-                        44.34444460000
-                    ],
-                    [
-                        11.72146740000,
-                        44.34439580000
-                    ],
-                    [
-                        11.72109640000,
-                        44.34429650000
-                    ],
-                    [
-                        11.72088570000,
-                        44.34424400000
-                    ],
-                    [
-                        11.72071000000,
-                        44.34420580000
-                    ],
-                    [
-                        11.72045040000,
-                        44.34416830000
-                    ],
-                    [
-                        11.72031730000,
-                        44.34416040000
-                    ],
-                    [
-                        11.72017000000,
-                        44.34415870000
-                    ],
-                    [
-                        11.71634660000,
-                        44.34420320000
-                    ],
-                    [
-                        11.71625010000,
-                        44.34420720000
-                    ],
-                    [
-                        11.71615360000,
-                        44.34421610000
-                    ],
-                    [
-                        11.71402560000,
-                        44.34454020000
-                    ],
-                    [
-                        11.71373510000,
-                        44.34454730000
-                    ],
-                    [
-                        11.71326970000,
-                        44.34456910000
-                    ],
-                    [
-                        11.71264070000,
-                        44.34459120000
-                    ],
-                    [
-                        11.71250930000,
-                        44.34459120000
-                    ],
-                    [
-                        11.71186980000,
-                        44.34454800000
-                    ],
-                    [
-                        11.71133330000,
-                        44.34449910000
-                    ],
-                    [
-                        11.71057490000,
-                        44.34442180000
-                    ]
+                    11.71960360000,
+                    44.34402850000
                 ]
             }
         },
         {
             "type": "Feature",
             "properties": {
-                "raceway": "start",
                 "rt:pit-stop": "finish"
             },
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    11.71401730000,
-                    44.34440550000
+                    11.71402560000,
+                    44.34454020000
                 ]
             }
         },
         {
             "type": "Feature",
             "properties": {
-                "rt:drs": "detect"
+                "rt:pit-stop": "start"
             },
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    11.72350371271,
-                    44.34485617280
+                    11.72109640000,
+                    44.34429650000
                 ]
             }
         },
         {
             "type": "Feature",
             "properties": {
-                "rt:drs": "finish"
+                "rt:curve": "3",
+                "rt:label": "variante tamburello"
             },
             "geometry": {
                 "type": "Point",
                 "coordinates": [
-                    11.70836710000,
-                    44.34413670000
-                ]
-            }
-        },
-        {
-            "type": "Feature",
-            "properties": {
-                "rt:sector": "2"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    11.70307688382,
-                    44.33757792139
-                ]
-            }
-        },
-        {
-            "type": "Feature",
-            "properties": {
-                "rt:sector": "3"
-            },
-            "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    11.71466286384,
-                    44.34075294011
+                    11.70796180000,
+                    44.34357990000
                 ]
             }
         },
@@ -171,7 +63,8 @@
             "properties": {
                 "oneway": "yes",
                 "rt:kind": "track",
-                "rt:width": "18"
+                "rt:width": "18",
+                "rt:height": "0"
             },
             "geometry": {
                 "type": "LineString",
@@ -525,6 +418,10 @@
                         44.34012670000
                     ],
                     [
+                        11.71042878445,
+                        44.34047779641
+                    ],
+                    [
                         11.71073060000,
                         44.34083750000
                     ],
@@ -599,6 +496,10 @@
                     [
                         11.71719410000,
                         44.34067640000
+                    ],
+                    [
+                        11.71722374522,
+                        44.34060523047
                     ],
                     [
                         11.71725460000,
@@ -681,6 +582,10 @@
                         44.34365870000
                     ],
                     [
+                        11.72479203228,
+                        44.34381964869
+                    ],
+                    [
                         11.72498780000,
                         44.34387280000
                     ],
@@ -707,6 +612,10 @@
                     [
                         11.72517750000,
                         44.34418240000
+                    ],
+                    [
+                        11.72497758341,
+                        44.34452732278
                     ],
                     [
                         11.72476620000,
@@ -755,6 +664,10 @@
                     [
                         11.72350371271,
                         44.34485617280
+                    ],
+                    [
+                        11.72196081672,
+                        44.34440938384
                     ],
                     [
                         11.72125550000,
@@ -854,16 +767,470 @@
         {
             "type": "Feature",
             "properties": {
-                "raceway": "finish",
-                "rt:pit-stop": "start",
-                "rt:sector": "1",
+                "rt:curve": "8",
+                "rt:height": "32.7"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.70645110000,
+                    44.33684400000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "15",
+                "rt:height": "27.5"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.71733340000,
+                    44.34048100000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "14",
+                "rt:height": "27.5"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.71714170000,
+                    44.34072790000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "6",
+                "rt:label": "variante villeneuve",
+                "rt:height": "3.5"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.70458490000,
+                    44.33855030000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "2",
+                "rt:height": "1.7"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.70819300000,
+                    44.34408120000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "5",
+                "rt:height": "2.5"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.70438240000,
+                    44.33928670000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:label": "rivazza"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.72497758341,
+                    44.34452732278
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:sector": "2"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.70307688382,
+                    44.33757792139
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "11",
+                "rt:height": "15.5"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.71005660000,
+                    44.34000280000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "13",
+                "rt:height": "15.5"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.71157760000,
+                    44.34073440000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:sector": "3"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.71466286384,
+                    44.34075294011
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "7",
+                "rt:label": "tosa",
+                "rt:height": "13.7"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.70208120000,
+                    44.33669790000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
                 "rt:drs": "start"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.72196081672,
+                    44.34440938384
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:drs": "finish"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.70836710000,
+                    44.34413670000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:label": "variante alta"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.71722374522,
+                    44.34060523047
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:speed-trap": "yes"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.72428150000,
+                    44.34365870000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "16",
+                "rt:height": "13.8"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.72320010000,
+                    44.34329670000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "raceway": "start",
+                "rt:starting-grid": "finish"
             },
             "geometry": {
                 "type": "Point",
                 "coordinates": [
                     11.71668720000,
                     44.34404780000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "oneway": "yes",
+                "rt:kind": "pit",
+                "rt:width": "14",
+                "rt:height": "0"
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        11.72350371271,
+                        44.34485617280
+                    ],
+                    [
+                        11.72282510000,
+                        44.34467260000
+                    ],
+                    [
+                        11.72167890000,
+                        44.34444460000
+                    ],
+                    [
+                        11.72146740000,
+                        44.34439580000
+                    ],
+                    [
+                        11.72109640000,
+                        44.34429650000
+                    ],
+                    [
+                        11.72088570000,
+                        44.34424400000
+                    ],
+                    [
+                        11.72071000000,
+                        44.34420580000
+                    ],
+                    [
+                        11.72045040000,
+                        44.34416830000
+                    ],
+                    [
+                        11.72031730000,
+                        44.34416040000
+                    ],
+                    [
+                        11.72017000000,
+                        44.34415870000
+                    ],
+                    [
+                        11.71634660000,
+                        44.34420320000
+                    ],
+                    [
+                        11.71625010000,
+                        44.34420720000
+                    ],
+                    [
+                        11.71615360000,
+                        44.34421610000
+                    ],
+                    [
+                        11.71402560000,
+                        44.34454020000
+                    ],
+                    [
+                        11.71373510000,
+                        44.34454730000
+                    ],
+                    [
+                        11.71326970000,
+                        44.34456910000
+                    ],
+                    [
+                        11.71264070000,
+                        44.34459120000
+                    ],
+                    [
+                        11.71250930000,
+                        44.34459120000
+                    ],
+                    [
+                        11.71186980000,
+                        44.34454800000
+                    ],
+                    [
+                        11.71133330000,
+                        44.34449910000
+                    ],
+                    [
+                        11.71057490000,
+                        44.34442180000
+                    ]
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "10",
+                "rt:height": "34.4"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.71056530000,
+                    44.33793610000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "17",
+                "rt:height": "5.2"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.72517760000,
+                    44.34400710000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:label": "acque minerali"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.71042878445,
+                    44.34047779641
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "4",
+                "rt:height": "1.7"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.70642770000,
+                    44.34292650000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "12",
+                "rt:height": "13.8"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.71082850000,
+                    44.34089590000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:drs": "detect"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.72479203228,
+                    44.34381964869
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "18",
+                "rt:height": "0"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.72445720000,
+                    44.34504060000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "9",
+                "rt:label": "piratella",
+                "rt:height": "34.4"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.70966410000,
+                    44.33664740000
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "properties": {
+                "rt:curve": "1",
+                "rt:height": "0"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    11.71634520000,
+                    44.34405250000
                 ]
             }
         }

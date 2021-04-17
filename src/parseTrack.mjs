@@ -201,7 +201,7 @@ export async function parseTrack(url, { zoom } = {}) {
                     // noop
                 }
                 else {
-                    console.warn(`Prop ${propName} ignored.`);
+                    console.warn(`Prop ${propName} ignored (${props[propName]}).`);
                 }
                 if (bag) {
                     const v = props[k];
@@ -232,6 +232,7 @@ export async function parseTrack(url, { zoom } = {}) {
         for (let [track, isClosed] of tracks) {
             const l = track.center.length;
             const slots = new Array(l);
+            slots.fill({});
             _pointsToHandle = [];
 
             pointsToHandle.forEach(([coord, props]) => {
@@ -338,23 +339,33 @@ export async function parseTrack(url, { zoom } = {}) {
         const tracks = [[output.track, true], [output.pit, false]];
         for (let [track, isClosed] of tracks) {
             const l = track.center.length;
+
             const widths = new Array(l);
             const heights = new Array(l);
             const cambers = new Array(l);
-            widths.fill(api.fromMeters(track.properties[RT_WIDTH]));
-            heights.fill(api.fromMeters(track.properties[RT_HEIGHT] || 0));
-            cambers.fill(api.fromMeters(track.properties[RT_CAMBER] || 0));
+
+            let width = track.properties[RT_WIDTH];
+            let height = track.properties[RT_HEIGHT] || 0;
+            let camber = track.properties[RT_CAMBER] || 0;
+
+            widths.fill(api.fromMeters(width));
+            heights.fill(api.fromMeters(height));
+            cambers.fill(api.fromMeters(camber));
 
             for (let [idx, props] of Object.entries(track.pointProperties)) {
                 if (props[RT_WIDTH]) {
-                    widths[idx] = api.fromMeters(props[RT_WIDTH]);
+                    width = props[RT_WIDTH];
                 }
                 if (props[RT_HEIGHT]) {
-                    heights[idx] = api.fromMeters(props[RT_HEIGHT]);
+                    height = props[RT_HEIGHT];
                 }
                 if (props[RT_CAMBER]) {
-                    cambers[idx] = api.fromMeters(props[RT_CAMBER]);
+                    camber = props[RT_CAMBER];
                 }
+
+                widths[idx] = api.fromMeters(width);
+                heights[idx] = api.fromMeters(height);
+                cambers[idx] = api.fromMeters(camber);
             }
 
             //console.log('widths', widths);
