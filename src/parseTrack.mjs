@@ -3,7 +3,7 @@
 https://www.openstreetmap.org/#map=16/37.2303/-8.6279
 */
 import { projectFactory } from './gis.mjs';
-import { limits2, parametric, distanceSquared2, zip } from './math.mjs';
+import { limits2, parametric, distanceSquared2, zip, rotateArray } from './math.mjs';
 
 const ZOOM_TO_METERS = 0.000003; // has not been calculated, estimated by trial and error
 
@@ -34,13 +34,6 @@ export const RT_VALUE_DETECT = 'detect';
 
 const trueish = ['true', 'yes'];
 const falsy = ['false', 'no'];
-
-function rotate(arr, delta) {
-    const l = arr.length;
-    const before = arr.slice(0, delta);
-    const from = arr.slice(delta);
-    return [...from, ...before];
-}
 
 function parseProperty(s) {
     if (isFinite(s)) {
@@ -310,10 +303,10 @@ export async function parseTrack(url, { zoom } = {}) {
             const ways = [];
             for (let detect of detects) {
                 while (starts[0] < detect && starts.length > 1) {
-                    starts = rotate(starts, 1);
+                    starts = rotateArray(starts, 1);
                 }
                 while (finishes[0] < starts[0] && finishes.length > 1) {
-                    finishes = rotate(finishes, 1);
+                    finishes = rotateArray(finishes, 1);
                 }
                 ways.push(trimWay(output.track.center, starts[0], finishes[0]));
             }

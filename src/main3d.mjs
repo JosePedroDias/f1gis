@@ -182,13 +182,18 @@ async function run() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    const helper = new THREE.GridHelper(30, 30);
-    //helper.scale.set(4, 4, 4);
-    scene.add(helper);
+    const gridHelper = new THREE.GridHelper(30, 30);
+    scene.add(gridHelper);
 
-    const light = new THREE.PointLight(0xffffff, 1, 100);
-    light.position.set(400, 400, 0);
-    scene.add(light);
+    const ambLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambLight);
+
+    const pointLight = new THREE.PointLight(0xffffff, 5, 300, 2);
+    pointLight.position.set(100, 100, 50);
+    scene.add(pointLight);
+
+    const pointLightHelper = new THREE.PointLightHelper(pointLight, 1);
+    scene.add(pointLightHelper);
 
     const mapName = location.hash?.substring(1) || 'portimao.2d.rt.geojson';
     const data = await parseTrack(`./assets/tracks/${mapName}`, { zoom: ZOOM });
@@ -198,6 +203,7 @@ async function run() {
     const trackGroup = new THREE.Group();
 
     const lambertMat = new THREE.MeshLambertMaterial({ color: 0xaaaaaa });
+    const lambertMat2 = new THREE.MeshLambertMaterial({ color: 0xFF0000 });
     const wireMat = new THREE.MeshBasicMaterial({ color: 0xff00ff, opacity: 0.75, wireframe: true, transparent: false });
     const lineMat = new THREE.LineBasicMaterial({ color: 0x00ffff, linewidth: 2 });
 
@@ -223,10 +229,9 @@ async function run() {
         for (let p_ of [bag.start, bag.finish]) {
             if (!p_) { break; }
             const p = convertPoint(p_)
-            const geometry = new THREE.SphereGeometry(0.02, 16, 16);
-            const mesh = new THREE.Mesh(geometry, lambertMat);
-            mesh.position.set(p[0], p[1], p[2]);
-            //mesh.add(new THREE.Mesh(geometry, wireMat));
+            const geometry = new THREE.SphereGeometry(0.04, 16, 16);
+            const mesh = new THREE.Mesh(geometry, lambertMat2);
+            mesh.position.set(...p);
             trackGroup.add(mesh);
 
             // TODO add directions to startingGrid?

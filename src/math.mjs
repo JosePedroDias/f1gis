@@ -265,3 +265,10 @@ export function zip(arrays, mapFn) {
     }
     return res;
 }
+
+export function rotateArray(arr, delta) {
+    const l = arr.length;
+    const before = arr.slice(0, delta);
+    const from = arr.slice(delta);
+    return [...from, ...before];
+}
