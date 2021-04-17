@@ -188,7 +188,7 @@ async function run() {
     const ambLight = new THREE.AmbientLight(0x404040);
     scene.add(ambLight);
 
-    const pointLight = new THREE.PointLight(0xffffff, 5, 300, 2);
+    const pointLight = new THREE.PointLight(0xffffff, 3, 300, 2);
     pointLight.position.set(100, 100, 50);
     scene.add(pointLight);
 

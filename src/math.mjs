@@ -245,17 +245,6 @@ export function pairs(arr) {    // assumes osm loop, therefore skipping connecti
     return res;
 }
 
-function makeArrayIterator(length, nextIndex = 0) {
-    const it = {
-        next: () => {
-            let result = { value: nextIndex, done: false }
-            nextIndex = (nextIndex + 1) % length;
-            return result;
-        }
-    };
-    return it;
-}
-
 export function zip(arrays, mapFn) {
     const l = arrays[0].length;
     const res = new Array(l);
@@ -271,4 +260,22 @@ export function rotateArray(arr, delta) {
     const before = arr.slice(0, delta);
     const from = arr.slice(delta);
     return [...from, ...before];
+}
+
+export function isClosedArray(arr) {
+    if (arr.length < 2) { return false; }
+    return JSON.stringify(arr[0]) === JSON.stringify(arr[arr.length - 1]);
+}
+
+export function getWrappedItem(arr, i, isClosed) {
+    const l = arr.length;
+    if (i < 0) {
+        i = l - 1;
+        if (isClosed) --i;
+    }
+    else if (i >= arr.length) {
+        i = 0;
+        if (isClosed) ++i;
+    }
+    return arr[i];
 }

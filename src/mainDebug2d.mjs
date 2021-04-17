@@ -34,7 +34,7 @@ async function run() {
 
     const data = await parseTrack(`./assets/tracks/${mapName}`, { zoom: ZOOM });
     //console.log('data', data);
-    const dropY = ([x, y, z]) => [x, z];
+    const dropY = ([x, _, z]) => [x, z];
     [data.track.left, data.track.center, data.track.right, data.pit.left, data.pit.center, data.pit.right].forEach(arr => {
         arr.forEach((p3, i, arr) => arr[i] = dropY(p3));
     });

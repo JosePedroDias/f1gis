@@ -3,7 +3,7 @@
 https://www.openstreetmap.org/#map=16/37.2303/-8.6279
 */
 import { projectFactory } from './gis.mjs';
-import { limits2, parametric, distanceSquared2, zip, rotateArray } from './math.mjs';
+import { limits2, parametric, distanceSquared2, distance2, zip, rotateArray, lerp, getWrappedItem, isClosedArray } from './math.mjs';
 
 const ZOOM_TO_METERS = 0.000003; // has not been calculated, estimated by trial and error
 
@@ -95,6 +95,50 @@ function trimWay(arr, i, f) {
         if (i === f) { return res; }
         i = (i + 1) % l;
     }
+}
+
+function interpolateNeigbours(coordArr, propsArr, i, prop, isClosed) {
+    if (propsArr[i][prop] !== undefined) {
+        return propsArr[i][prop];
+    }
+
+    const l = coordArr.length;
+
+    let distBefore = 0;
+    let propBefore;
+    for (let delta = 1; delta < l; ++delta) {
+        const p1 = getWrappedItem(coordArr, i - delta + 1, isClosed);
+        const p2 = getWrappedItem(coordArr, i - delta, isClosed);
+        distBefore += distance2(p1, p2);
+        const v = getWrappedItem(propsArr, i - delta, isClosed)[prop];
+        if (v !== undefined) {
+            propBefore = v;
+            break;
+        }
+    }
+    if (!propBefore) {
+        throw new Error(`could not find ${prop} before index #${i}!`);
+    }
+
+    let distAfter = 0;
+    let propAfter;
+    for (let delta = 1; delta < l; ++delta) {
+        const p1 = getWrappedItem(coordArr, i + delta - 1, isClosed);
+        const p2 = getWrappedItem(coordArr, i + delta, isClosed);
+        distAfter += distance2(p1, p2);
+        const v = getWrappedItem(propsArr, i + delta)[prop];
+        if (v !== undefined) {
+            propAfter = v;
+            break;
+        }
+    }
+    if (!propAfter) {
+        throw new Error(`could not find ${prop} after index #${i}!`);
+    }
+
+    const ratio = distBefore / (distBefore + distAfter);
+    const v = lerp(propBefore, propAfter, ratio);
+    return v;
 }
 
 export async function parseTrack(url, { zoom } = {}) {
@@ -195,12 +239,14 @@ export async function parseTrack(url, { zoom } = {}) {
                     return;
                 }
 
-                slots[idx] = props;
+                const superProps = { ...slots[idx], ...props };
+
+                slots[idx] = superProps;
                 if (isClosed) {
                     if (idx === 0) {
-                        slots[l - 1] = props;
+                        slots[l - 1] = superProps;
                     } else if (idx === l - 1) {
-                        slots[0] = props;
+                        slots[0] = superProps;
                     }
                 }
             });
@@ -306,36 +352,35 @@ export async function parseTrack(url, { zoom } = {}) {
 
     // assign widths and heights... generate left and right ways TODO: cambers
     {
-        const tracks = [[output.track, true], [output.pit, false]];
+        const tracks = [
+            [output.track, true],
+            [output.pit, false]
+        ];
         for (let [track, isClosed] of tracks) {
             const l = track.center.length;
 
             const widths = new Array(l);
             const heights = new Array(l);
-            const cambers = new Array(l);
+            //const cambers = new Array(l);
 
             let width = track.properties[RT_WIDTH];
             let height = track.properties[RT_HEIGHT] || 0;
-            let camber = track.properties[RT_CAMBER] || 0;
+            //let camber = track.properties[RT_CAMBER] || 0;
 
             widths.fill(api.fromMeters(width));
             heights.fill(api.fromMeters(height));
-            cambers.fill(api.fromMeters(camber));
+            //cambers.fill(api.fromMeters(camber));
 
-            for (let [idx, props] of Object.entries(track.pointProperties)) {
-                if (props[RT_WIDTH]) {
-                    width = props[RT_WIDTH];
-                }
-                if (props[RT_HEIGHT]) {
-                    height = props[RT_HEIGHT] * 6;// TODO ACCENTUATE ELEVATION 
-                }
-                if (props[RT_CAMBER]) {
-                    camber = props[RT_CAMBER];
-                }
+            for (let idx = 0; idx < track.pointProperties.length; ++idx) {
+                try {
+                    width = interpolateNeigbours(track.center, track.pointProperties, idx, RT_WIDTH, isClosed);
+                    widths[idx] = api.fromMeters(width);
+                } catch (_) { }
 
-                widths[idx] = api.fromMeters(width);
-                heights[idx] = api.fromMeters(height);
-                cambers[idx] = api.fromMeters(camber);
+                try {
+                    height = interpolateNeigbours(track.center, track.pointProperties, idx, RT_HEIGHT, isClosed) * 5;
+                    heights[idx] = api.fromMeters(height);
+                } catch (_) { }
             }
 
             track.left = parametric(track.center, -Math.PI / 2, widths, closed)
