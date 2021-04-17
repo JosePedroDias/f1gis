@@ -1,4 +1,4 @@
-import { parseTrack } from './parseTrack.mjs';
+import { parseTrack, RT_POINT_TAG_RACEWAY } from './parseTrack.mjs';
 import { drawPolygon, drawTrack, drawArrow, drawCircle, drawText, } from './canvas.mjs';
 import { subV, mulVScalar, toPolar, parametric } from './math.mjs';
 import { turtle } from './math.mjs';
@@ -52,7 +52,7 @@ async function run() {
 
     const canvasDims = [WINDOW_SIZE, WINDOW_SIZE];
     const dataDims = data.dimensions;
-    const offset = mulVScalar(0.5, subV(canvasDims, dataDims));
+    const offset = mulVScalar(1, subV(canvasDims, dataDims));
 
     // TODO data should be center at map center! it isn't yet
     ctx.translate(offset[0], offset[1]);
@@ -80,8 +80,10 @@ async function run() {
     // STARTING TRACK POS AND DIR, pitStop and startingGrid
     {
         {
-            const p0 = data.track.center[data.startFinishIndex];
-            const p1 = data.track.center[data.startFinishIndex + 1];
+            const startFinishIndex = data.track.pointProperties.findIndex(props => !!props[RT_POINT_TAG_RACEWAY]) || 0;
+
+            const p0 = data.track.center[startFinishIndex];
+            const p1 = data.track.center[startFinishIndex + 1];
             const v0 = subV(p1, p0);
             const angleAtP0 = toPolar(v0)[0];
             const t = turtle(p0, angleAtP0);

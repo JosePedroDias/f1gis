@@ -2,7 +2,7 @@ import * as THREE from '../external/three.mjs';
 import { OrbitControls } from '../external/OrbitControls.mjs';
 //import { OBJExporter } from '../external/OBJExporter.mjs';
 
-import { parseTrack } from './parseTrack.mjs';
+import { parseTrack, RT_POINT_TAG_CURVE, RT_POINT_TAG_LABEL, RT_HEIGHT } from './parseTrack.mjs';
 
 // https://threejs.org/docs
 // TODO https://threejs.org/docs/index.html#api/en/lights/shadows/DirectionalLightShadow
@@ -20,6 +20,8 @@ import { parseTrack } from './parseTrack.mjs';
 const ZOOM = 16;
 const S = 1 / 40;
 
+const textLabels = [];
+
 window.addEventListener('hashchange', () => location.reload());
 
 function convertPoint(p) {
@@ -31,6 +33,50 @@ function convertPoint(p) {
         throw new Error('Wrong number of coords!');
     }
 
+}
+
+function createTextLabel() {
+    const div = document.createElement('div');
+    div.className = 'text-label';
+    div.style.position = 'absolute';
+    div.innerHTML = 'label';
+    div.style.display = 'none';
+
+    return {
+        element: div,
+        parent: false,
+        position: new THREE.Vector3(0, 0, 0),
+        setHTML(html) {
+            this.element.innerHTML = html;
+        },
+        setParent(parObj) {
+            this.parent = parObj;
+        },
+        updatePosition(camera) {
+            if (parent) {
+                this.position.copy(this.parent.position);
+            }
+
+            const c2d = this.get2DCoords(this.position, camera);
+
+            if (c2d.visible) {
+                if (this.element.style.display === 'none') {
+                    this.element.style.display = '';
+                }
+                this.element.style.left = c2d.x.toFixed(1) + 'px';
+                this.element.style.top = c2d.y.toFixed(1) + 'px';
+            } else {
+                this.element.style.display = 'none';
+            }
+        },
+        get2DCoords(position, camera) {
+            const vector = position.project(camera);
+            vector.visible = vector.x >= -1 && vector.x <= 1 && vector.y >= -1 && vector.y <= 1;
+            vector.x = (vector.x + 1) / 2 * window.innerWidth;
+            vector.y = -(vector.y - 1) / 2 * window.innerHeight;
+            return vector;
+        }
+    };
 }
 
 function throughSpline(points_, closed) {
@@ -55,7 +101,7 @@ function throughSpline(points_, closed) {
     return out2;
 }
 
-function generateRailGeometry(leftRail, rightRail, closed) {
+function generateRailGeometry(leftRail, rightRail, closed, scene) {
     const geometry = new THREE.BufferGeometry();
 
     const rails = [leftRail, rightRail];//.map(points => throughSpline(points, closed));
@@ -73,7 +119,7 @@ function generateRailGeometry(leftRail, rightRail, closed) {
     for (let wi = 0; wi < waySize; ++wi) {
         const p0 = rails[0][wi];
         const p1 = rails[1][wi];
-        const crossSize = [ // TODO: injecting Y for now
+        const crossSize = [
             convertPoint(p0), convertPoint(p1)
         ];
         for (let csi = 0; csi < crossSectionSize; ++csi) {
@@ -99,6 +145,35 @@ function generateRailGeometry(leftRail, rightRail, closed) {
     return geometry;
 }
 
+function generateLineGeometry(centerRail, pointProperties, closed, scene) {
+    const points = [];
+    centerRail.forEach((p) => {
+        const [x, y, z] = convertPoint(p);
+        points.push(new THREE.Vector3(x, 0, z));
+    });
+
+    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+
+    points.forEach((p, i) => {
+        const props = pointProperties[i];
+        const hasLabel = props[RT_POINT_TAG_CURVE] || props[RT_HEIGHT]; // RT_HEIGHT RT_POINT_TAG_CURVE RT_POINT_TAG_LABEL
+        if (!hasLabel) { return; }
+        const label = `c${props[RT_POINT_TAG_CURVE] || `#${i}`} ${props[RT_HEIGHT] ? `${props[RT_HEIGHT]}m` : '--'}`;
+
+        const group = new THREE.Group();
+        group.position.set(p.x, p.y, p.z);
+        scene.add(group);
+
+        const text = createTextLabel();
+        text.setHTML(label);
+        text.setParent(group);
+        textLabels.push(text);
+        document.body.appendChild(text.element);
+    });
+
+    return geometry;
+}
+
 async function run() {
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -107,11 +182,12 @@ async function run() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    const helper = new THREE.GridHelper(10, 10);
+    const helper = new THREE.GridHelper(30, 30);
+    //helper.scale.set(4, 4, 4);
     scene.add(helper);
 
     const light = new THREE.PointLight(0xffffff, 1, 100);
-    light.position.set(20, 30, 0);
+    light.position.set(400, 400, 0);
     scene.add(light);
 
     const mapName = location.hash?.substring(1) || 'portimao.2d.rt.geojson';
@@ -122,7 +198,8 @@ async function run() {
     const trackGroup = new THREE.Group();
 
     const lambertMat = new THREE.MeshLambertMaterial({ color: 0xaaaaaa });
-    const wireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, opacity: 0.5, wireframe: true, transparent: true });
+    const wireMat = new THREE.MeshBasicMaterial({ color: 0xff00ff, opacity: 0.75, wireframe: true, transparent: false });
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x00ffff, linewidth: 2 });
 
     // track parts
     let parts = [
@@ -156,6 +233,16 @@ async function run() {
         }
     }
 
+    parts = [
+        [data.track.center, data.track.pointProperties, true, scene],
+        //[data.pit.center, data.pit.pointProperties, false, scene]
+    ];
+    for (let params of parts) {
+        const geometry = generateLineGeometry(...params);
+        const line = new THREE.Line(geometry, lineMat);
+        trackGroup.add(line);
+    }
+
     scene.add(trackGroup);
 
     /* const oe = new OBJExporter();
@@ -168,12 +255,22 @@ async function run() {
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.update();
 
-    function animate() {
+
+    let lastSecond = -1;
+    function animate(tMs) {
+        let second = Math.floor(tMs / 100);
         requestAnimationFrame(animate);
         //trackGroup.rotation.x += 0.005;
         //trackGroup.rotation.y += 0.01;
         controls.update();
+
+        lastSecond !== second && textLabels.forEach(tl => {
+            tl.updatePosition(camera);
+        });
+
         renderer.render(scene, camera);
+
+        lastSecond = second;
     };
 
     animate();

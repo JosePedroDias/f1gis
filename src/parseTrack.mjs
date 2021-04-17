@@ -11,23 +11,26 @@ const GJ_GEO_TYPE_LS = 'LineString';
 const GJ_GEO_TYPE_P = 'Point';
 
 const RT_KIND = 'rt:kind';
-const RT_WIDTH = 'rt:width';
-const RT_HEIGHT = 'rt:height';
-const RT_CAMBER = 'rt:camber';
 
 const RT_KIND_TRACK = 'track';
 const RT_KIND_PIT = 'pit';
 
-const RT_POINT_TAG_RACEWAY = 'raceway';
-const RT_POINT_TAG_PIT_STOP = 'rt:pit-stop';
-const RT_POINT_TAG_STARTING_GRID = 'rt:starting-grid';
-const RT_POINT_TAG_DRS = 'rt:drs';
-const RT_POINT_TAG_SECTOR = 'rt:sector';
+export const RT_WIDTH = 'rt:width';
+export const RT_HEIGHT = 'rt:height';
+export const RT_CAMBER = 'rt:camber';
 
-const RT_VALUE_START = 'start';
-const RT_VALUE_FINISH = 'finish';
-const RT_VALUE_START_FINISH = 'start-finish';
-const RT_VALUE_DETECT = 'detect';
+export const RT_POINT_TAG_RACEWAY = 'raceway';
+export const RT_POINT_TAG_PIT_STOP = 'rt:pit-stop';
+export const RT_POINT_TAG_STARTING_GRID = 'rt:starting-grid';
+export const RT_POINT_TAG_DRS = 'rt:drs';
+export const RT_POINT_TAG_SECTOR = 'rt:sector';
+export const RT_POINT_TAG_CURVE = 'rt:curve';
+export const RT_POINT_TAG_LABEL = 'rt:label';
+
+export const RT_VALUE_START = 'start';
+export const RT_VALUE_FINISH = 'finish';
+export const RT_VALUE_START_FINISH = 'start-finish';
+export const RT_VALUE_DETECT = 'detect';
 
 const trueish = ['true', 'yes'];
 const falsy = ['false', 'no'];
@@ -125,12 +128,10 @@ export async function parseTrack(url, { zoom } = {}) {
         startingGrid: {}, // positions (start, finish)
         sector: {}, // positions (1, 2, 3)
         drs: {}, // positions (start, finish, detect (arrays))
-        dimensions: [], // [w, h]
-        center: [], // [x, y]
-        startFinishIndex: 0
+        dimensions: [] // [w, h]
     }
 
-    let ox, oy;
+    let ox, oy
     { // TODO REVIEW THIS. map should be centered
         const geo = trackFeature.geometry;
         const coords = geo.coordinates;
@@ -139,9 +140,8 @@ export async function parseTrack(url, { zoom } = {}) {
         const width = limits[0][1] - limits[0][0];
         const height = limits[1][1] - limits[1][0];
         output.dimensions = [width, height];
-        //[ox, oy] = [limits[0][0] - (0 - width) / 2, limits[1][0] - (0 - height) / 2];
-        [ox, oy] = [limits[0][0], limits[1][0]];
-        output.center = [ox, oy];
+        ox = limits[0][0] + width / 2;
+        oy = limits[1][0] + height / 2;
     }
 
     function offset([x, y]) {
@@ -263,15 +263,6 @@ export async function parseTrack(url, { zoom } = {}) {
         }
     }
 
-    // startFinishIndex
-    if (output._racewayStartFinish) {
-        const i = findNearestIndex(output.track.center, output._racewayStartFinish);
-        output.startFinishIndex = i;
-        delete output._racewayStartFinish;
-    } else {
-        console.warn(`${RT_POINT_TAG_RACEWAY} property with value ${RT_VALUE_START_FINISH} missing from a point in the ${GJ_GEO_TYPE_LS} ${RT_KIND_TRACK}! Assuming index 0.`);
-    }
-
     // trim sector ways
     {
         const sectors = [];
@@ -357,7 +348,7 @@ export async function parseTrack(url, { zoom } = {}) {
                     width = props[RT_WIDTH];
                 }
                 if (props[RT_HEIGHT]) {
-                    height = props[RT_HEIGHT];
+                    height = props[RT_HEIGHT] * 1;// TODO ACCENTUATE ELEVATION 
                 }
                 if (props[RT_CAMBER]) {
                     camber = props[RT_CAMBER];
