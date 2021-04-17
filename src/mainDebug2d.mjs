@@ -51,10 +51,7 @@ async function run() {
     const stepsSectors = ['1', '2', '3'];
 
     const canvasDims = [WINDOW_SIZE, WINDOW_SIZE];
-    const dataDims = data.dimensions;
-    const offset = mulVScalar(1, subV(canvasDims, dataDims));
-
-    // TODO data should be center at map center! it isn't yet
+    const offset = mulVScalar(0.5, canvasDims);
     ctx.translate(offset[0], offset[1]);
 
     // draw pit lane

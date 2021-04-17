@@ -348,7 +348,7 @@ export async function parseTrack(url, { zoom } = {}) {
                     width = props[RT_WIDTH];
                 }
                 if (props[RT_HEIGHT]) {
-                    height = props[RT_HEIGHT] * 1;// TODO ACCENTUATE ELEVATION 
+                    height = props[RT_HEIGHT] * 6;// TODO ACCENTUATE ELEVATION 
                 }
                 if (props[RT_CAMBER]) {
                     camber = props[RT_CAMBER];
